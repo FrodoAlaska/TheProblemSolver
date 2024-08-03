@@ -129,11 +129,11 @@ const std::string count_timer_to_str(CountTimer* timer) {
   std::string zero_min = "0"; 
   std::string zero_sec = "0"; 
 
-  if(timer->minutes > 10) {
+  if(timer->minutes > 9) {
     zero_min = "";
   }
 
-  if(timer->seconds > 10) {
+  if(timer->seconds > 9) {
     zero_sec = "";
   }
 

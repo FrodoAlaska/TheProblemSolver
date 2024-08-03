@@ -33,7 +33,7 @@ void ui_canvas_destroy(UICanvas* canvas) {
 
 void ui_canvas_begin(UICanvas* canvas, const glm::vec2& offset, const UIAnchor start_anchor) {
   canvas->offset = offset;
-  canvas->current_offset = glm::vec2(0.0f);//offset;
+  canvas->current_offset = glm::vec2(0.0f);
   canvas->current_anchor = start_anchor;
 }
 
@@ -56,7 +56,7 @@ UIText& ui_canvas_push_text(UICanvas* canvas,
                  font_size, 
                  anc, 
                  text_color,
-                 canvas->current_offset);
+                 offset);
 
   canvas->texts.push_back(txt);
   canvas->current_offset += offset; 

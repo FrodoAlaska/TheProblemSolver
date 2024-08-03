@@ -44,7 +44,7 @@ void ui_text_set_position(UIText* text, UIAnchor anc) {
   glm::vec2 text_size = ui_text_measure_size(text);
   glm::vec2 window_size = window_get_size();
   glm::vec2 window_center = window_size / 2.0f;
-  glm::vec2 padding = glm::vec2(10.0f, 10.0f);
+  glm::vec2 padding = glm::vec2(10.0f);
 
   switch(anc) {
     case UI_ANCHOR_TOP_LEFT:  

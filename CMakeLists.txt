@@ -114,6 +114,8 @@ set(APP_SOURCES
   ${APP_SRC_DIR}/tasks_menu.cpp 
 
   # State
+  ${APP_SRC_DIR}/states/state_manager.cpp 
+  ${APP_SRC_DIR}/states/game_state.cpp 
 )
 
 set(EDITOR_SOURCES 

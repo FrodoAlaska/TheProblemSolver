@@ -23,7 +23,7 @@ void ui_button_create(UIButton* button,
   ui_text_create(&button->text, font, str, font_size, anc, text_color, offset);
 
   button->size = ui_text_measure_size(&button->text) + 10.0f;
-  button->position = button->text.position - 8.0f; // @TODO: Must have a more generic way of determing the margin to remove
+  button->position = button->text.position - glm::vec2(5.0f, 18.0f); // @TODO: Must have a more generic way of determing the margin to remove
 
   button->offset = offset; 
   button->color = button_color;

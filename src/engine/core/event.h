@@ -4,6 +4,7 @@
 #include "audio/sound_type.h"
 #include "audio/music_type.h"
 #include "physics/collision_data.h"
+#include "states/state_type.h"
 
 #include <glm/vec2.hpp>
 
@@ -31,6 +32,9 @@ enum EventType {
 
   // Entity events
   EVENT_ENTITY_COLLISION,
+
+  // State events 
+  EVENT_STATE_CHANGE, 
 };
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -51,6 +55,9 @@ struct EventDesc {
 
   // Collision 
   CollisionData coll_data;
+
+  // State 
+  StateType state;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
