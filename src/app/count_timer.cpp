@@ -29,11 +29,13 @@ static void seconds_tick(CountTimer* timer) {
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-void count_timer_create(CountTimer* timer, const i32 start_secs, const i32 start_mins, const i32 start_hours, const bool countdown) {
+void count_timer_create(CountTimer* timer, const i32 start_secs, const i32 start_mins, const bool countdown) {
   timer->seconds = start_secs; 
   timer->minutes = start_mins;
-  timer->hours   = start_hours; 
   timer->frame_counter = 0; 
+
+  timer->initial_seconds = start_secs; 
+  timer->initial_minutes = start_mins; 
 
   timer->can_count = true;
   timer->is_countdown = countdown;
@@ -63,12 +65,6 @@ void count_timer_update(CountTimer* timer) {
     timer->minutes++;
     timer->seconds = 0;
   }
-
-  // Increasing the hours every 60 minutes
-  if(timer->minutes == MIN_IN_HOUR) {
-    timer->hours++;
-    timer->minutes = 0;
-  }
 }
 
 void count_timer_render(CountTimer* timer) {
@@ -77,9 +73,8 @@ void count_timer_render(CountTimer* timer) {
 }
 
 void count_timer_reset(CountTimer* timer) {
-  timer->seconds = 0; 
-  timer->minutes = 0;
-  timer->hours = 0; 
+  timer->seconds = timer->initial_seconds; 
+  timer->minutes = timer->initial_minutes;
   timer->frame_counter = 0;
 }
 
@@ -139,5 +134,9 @@ const std::string count_timer_to_str(CountTimer* timer) {
 
   return zero_min + std::to_string(timer->minutes) + ":" + 
   zero_sec + std::to_string(timer->seconds);
+}
+
+const bool count_timer_has_runout(CountTimer* timer) {
+  return (timer->seconds == 0) && (timer->minutes == 0);
 }
 /////////////////////////////////////////////////////////////////////////////////

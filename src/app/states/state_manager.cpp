@@ -1,5 +1,7 @@
 #include "state_manager.h"
 #include "core/event.h"
+#include "core/input.h"
+#include "count_timer.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
 #include "states/game_state.h"
@@ -41,6 +43,19 @@ static void settings_button_change_scene(UIButton* button, const UIButtonState b
     state_manager->current_state = STATE_MENU; 
   }
 }
+
+static void lose_button_change_scene(UIButton* button, const UIButtonState button_state, void* user_data) {
+  if(button_state != BUTTON_STATE_PRESSED) {
+    return;
+  }
+
+  StateManger* state_manager = (StateManger*)user_data;
+
+  if(button->text.str == "RE-SOLVE") {
+    state_manager->current_state = STATE_GAME;
+    game_state_reset(&state_manager->game_state);
+  }
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions 
@@ -72,11 +87,21 @@ static void settings_state_init(StateManger* state, Font* font) {
 }
 
 static void win_state_init(StateManger* state, Font* font) {
-  ui_canvas_push_text(state->states[STATE_WIN], "ALL PROBLEMS SOLVED!", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER);
+  ui_canvas_push_text(state->states[STATE_WIN], "ALL PROBLEMS SOLVED!", 50.0f, glm::vec4(1.0f), UI_ANCHOR_CENTER);
 }
 
 static void lose_state_init(StateManger* state, Font* font) {
-  ui_canvas_push_text(state->states[STATE_LOSE], "You ran out of time... as you always do", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER);
+  UICanvas* canvas = state->states[STATE_LOSE];
+
+  ui_canvas_push_text(canvas, "You ran out of time... as you always do", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0.0f, 10.0f));
+  ui_canvas_push_button(canvas, 
+                        "RE-SOLVE", 
+                        30.0f, 
+                        glm::vec4(1.0f), 
+                        glm::vec4(0, 0, 0, 1), 
+                        (void*)state, 
+                        lose_button_change_scene, 
+                        UI_ANCHOR_CENTER);
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -109,6 +134,12 @@ void state_manager_shutdown(StateManger* state) {
 void state_manager_update(StateManger* state) {
   if(state->current_state != STATE_GAME) {
     return;
+  }
+
+  // @NOTE: This is really really bad but it works so it's fine 
+  if(count_timer_has_runout(&state->game_state.timer)) {
+    state->current_state = STATE_LOSE;
+    input_cursor_show(true);
   }
 
   game_state_update(&state->game_state);

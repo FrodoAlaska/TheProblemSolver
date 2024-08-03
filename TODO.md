@@ -1,6 +1,5 @@
 # TODO:
-- State change 
-- Pause menu
+- Pause menu & full game restart
 - Make shooting with the mouse not the space bar
 - Play-testing: round 1 / adjust difficulty
 - Visuals -> models, cubemaps, text popping up when for hits, combos, critical hits, time increases, and etc.

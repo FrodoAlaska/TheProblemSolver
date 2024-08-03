@@ -119,6 +119,10 @@ const glm::vec2& input_mouse_offset() {
   return state.mouse_offset;
 }
 
+void input_set_mouse_offset(const glm::vec2& offset) {
+  state.mouse_offset = offset;
+}
+
 void input_cursor_show(const bool show) {
   event_dispatch(EVENT_CURSOR_CHANGED, EventDesc{.cursor_shown = show});
 }

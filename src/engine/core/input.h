@@ -170,5 +170,6 @@ bool input_button_released(const ButtonCode key);
 
 const glm::vec2& input_mouse_pos();
 const glm::vec2& input_mouse_offset();
+void input_set_mouse_offset(const glm::vec2& offset);
 void input_cursor_show(const bool show);
 /////////////////////////////////////////////////////////////////////////////////

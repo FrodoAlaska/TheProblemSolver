@@ -1,5 +1,5 @@
 #include "game_state.h"
-#include "ui/ui_canvas.h"
+#include "core/input.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
@@ -57,7 +57,7 @@ void game_state_init(GameState* game) {
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets, 20.0f);
-  count_timer_create(&game->timer, 0, 1, 0, true);
+  count_timer_create(&game->timer, 10, 0, true);
   hit_manager_init(&game->hit_manager);
   task_menu_init(&game->task_menu);
 }
@@ -86,7 +86,7 @@ void game_state_update(GameState* game) {
   check_collisions(game);
     
   // Increase timer every three combos 
-  if((game->hit_manager.total_combo % 3) == 0) {
+  if((game->hit_manager.total_combo % 3) == 0 && game->score != 0) {
     count_timer_increase(&game->timer, 10);
   } 
 
@@ -127,6 +127,12 @@ void game_state_render_ui(GameState* game) {
 }
 
 void game_state_reset(GameState* game) {
+  count_timer_reset(&game->timer);
 
+  input_cursor_show(false);
+  input_set_mouse_offset(glm::vec2(0.0f));
+
+  game->camera.yaw = -90.0f;
+  game->camera.pitch = 0.0f;
 }
 /////////////////////////////////////////////////////////////////////////////////
