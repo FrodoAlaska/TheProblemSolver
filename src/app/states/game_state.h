@@ -7,6 +7,7 @@
 #include "target_spawner.h"
 #include "entities/object.h"
 #include "hit_manager.h"
+#include "ui/ui_text.h"
 
 #include <vector>
 
@@ -24,6 +25,9 @@ struct GameState {
   TaskMenu task_menu;
 
   u32 score = 0;
+
+  bool is_paused; 
+  UIText pause_text;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

@@ -26,7 +26,6 @@ void task_menu_init(TaskMenu* menu) {
   menu->tasks[8] = Task{100000, "house on river"};
 
   menu->current_task = 0;
-  menu->progress_bar = 0;
 
   menu->canvas = ui_canvas_create(renderer2d_get_default_font());
 
@@ -59,9 +58,6 @@ void task_menu_update(TaskMenu* menu, u32* current_balance) {
 
     // Check on the next task next time
     menu->current_task++; 
-
-    // Reset the progress bar 
-    menu->progress_bar = 0;
 
     // Give the player a 10% bonus for completing the task 
     *current_balance += task.cost * 0.1f;

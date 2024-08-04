@@ -95,7 +95,6 @@ void engine_run(AppDesc& desc) {
     }
 
     gclock_update();
-    physics_world_update(gclock_delta_time());
 
     desc.update_func(desc.user_data);
     

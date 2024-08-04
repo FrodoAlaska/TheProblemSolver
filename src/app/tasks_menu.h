@@ -23,7 +23,7 @@ struct Task {
 /////////////////////////////////////////////////////////////////////////////////
 struct TaskMenu {
   Task tasks[TASKS_MAX];
-  u32 current_task, progress_bar;
+  u32 current_task;
 
   UICanvas* canvas;
   std::vector<Rect> strikethroughs;

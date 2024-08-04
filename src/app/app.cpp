@@ -1,5 +1,6 @@
 #include "app.h"
 #include "core/input.h"
+#include "core/window.h"
 #include "engine/graphics/renderer.h"
 #include "engine/graphics/renderer2d.h"
 #include "resources/resource_manager.h"
@@ -32,6 +33,8 @@ bool app_init(void* user_data) {
   // State manager init
   state_manager_init(&s_app.state_manager, font);
 
+  window_set_exit_key(KEY_F1);
+  
   return true;
 }
 
