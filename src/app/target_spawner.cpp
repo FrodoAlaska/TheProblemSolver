@@ -11,19 +11,14 @@
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
-#define MAX_POSITIONS 5
-#define MAX_COUNTER_LIMIT 20.0f
+#define MAX_TARGETS 5
+#define MAX_COUNTER_LIMIT 120.0f
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
-static void spawn_target(TargetSpawner* spawner) {
+static void spawn_targets(TargetSpawner* spawner) {
   for(auto& obj : *spawner->objects) {
-    // We only care about the inactive targets
-    if(obj->is_active) {
-      continue;
-    }
-
     glm::vec3 new_pos = spawner->empty_seats.front();
     spawner->empty_seats.pop();
 
@@ -44,14 +39,14 @@ void target_spawner_init(TargetSpawner* spawner, std::vector<Object*>& objs) {
 
   // Preloading all of the positions that will be used 
   // and the targets too
-  for(u32 i = 0; i < MAX_POSITIONS; i++) {
+  for(u32 i = 0; i < MAX_TARGETS; i++) {
     spawner->objects->push_back(object_create(glm::vec3(1.0f), PhysicsBodyDesc {
       .position = glm::vec3(50.0f, -0.1f, i * 5.0f), 
       .type = PHYSICS_BODY_DYNAMIC,
     }, "target_texture"));
   }
 
-  spawner->can_spawn = true;
+  spawner->can_spawn = false;
 
   spawner->frames = 0; // Just counts the frames
   spawner->wait_frames = 300; // How much to wait before deactivating the target
@@ -59,7 +54,8 @@ void target_spawner_init(TargetSpawner* spawner, std::vector<Object*>& objs) {
 
 void target_spawner_hit(TargetSpawner* spawner, Object* obj, const Ray& ray) {
   // Add new empty seat 
-  spawner->empty_seats.push(obj->body->transform.position);
+  glm::vec3 object_pos = obj->body->transform.position;
+  spawner->empty_seats.push(glm::vec3(object_pos.x, -0.1f, object_pos.z));
 
   // Be with the force!!!
   physics_body_apply_linear_impulse(obj->body, -ray.direction * 50.0f);
@@ -69,27 +65,24 @@ void target_spawner_hit(TargetSpawner* spawner, Object* obj, const Ray& ray) {
 }
 
 void target_spawner_update(TargetSpawner* spawner) {
+  // Spawn the targets when all of them have been shot 
+  if(spawner->empty_seats.size() == MAX_TARGETS) {
+    // For aesthetical reasons, the targets will not spawn immediately. 
+    // Instead there should be a smaller timer after which all the 
+    // targets will spawn. 
+    spawner->can_spawn = true;
+  }
+
   if(!spawner->can_spawn) {
     return;
   }
 
-  spawner->spawn_counter++; 
+  spawner->spawn_counter++;
   if(spawner->spawn_counter >= spawner->spawn_counter_limit) {
-    spawn_target(spawner);
+    spawn_targets(spawner);
+
     spawner->spawn_counter = 0.0f;
-  }
-
-  if(spawner->inactive_objects.empty()) {
-    return;
-  }
-
-  // Some time has passed, just deactivate the target
-  spawner->frames++;
-  if(spawner->frames >= spawner->wait_frames) {
-    object_activate(spawner->inactive_objects.front(), false);
-    spawner->inactive_objects.pop();
-
-    spawner->frames = 0;
+    spawner->can_spawn = false;
   }
 }
 
@@ -97,10 +90,11 @@ void target_spawner_reset(TargetSpawner* spawner) {
   spawner->frames = 0;
   spawner->spawn_counter = 0; 
   spawner->spawn_counter_limit = MAX_COUNTER_LIMIT;
-  spawner->can_spawn = true;
+  spawner->can_spawn = false;
 
   // Resetting all of the objects to their original positions
-  for(u32 i = 0; i < MAX_POSITIONS; i++) {
+  for(u32 i = 0; i < MAX_TARGETS; i++) {
+    spawner->objects->at(i)->body->linear_velocity = glm::vec3(0.0f);
     transform_translate(&spawner->objects->at(i)->body->transform, glm::vec3(50.0f, -0.1f, i * 5.0f)); 
   }
 }

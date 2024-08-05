@@ -5,8 +5,8 @@
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
-#define CRITICAL_HIT     90
-#define COMBO_TIME_LIMIT 100.0f
+#define CRITICAL_HIT     80
+#define COMBO_TIME_LIMIT 450.0f
 #define MAX_HIT_POINTS   200
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,6 @@ void hit_manager_update(HitManager* hit) {
   }
 
   hit->combo_timer++;
-
   if(hit->combo_timer >= COMBO_TIME_LIMIT) {
     hit_manager_end_combo(hit);
   }

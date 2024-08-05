@@ -102,7 +102,7 @@ void game_state_update(GameState* game) {
   } 
 
   // Player shooting the gun
-  if(!input_key_pressed(KEY_SPACE)) {
+  if(!input_button_pressed(MOUSE_BUTTON_LEFT)) {
     return;
   }
 
@@ -110,7 +110,7 @@ void game_state_update(GameState* game) {
   check_collisions(game);
     
   // Increase timer every three combos 
-  if((game->hit_manager.total_combo % 3) == 0 && game->score != 0) {
+  if((game->hit_manager.total_combo % 3) == 0 && game->score != 0 && game->hit_manager.total_combo != 0) {
     count_timer_increase(&game->timer, 10);
   } 
 

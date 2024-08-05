@@ -56,7 +56,7 @@ UIText& ui_canvas_push_text(UICanvas* canvas,
                  font_size, 
                  anc, 
                  text_color,
-                 offset);
+                 canvas->current_offset);
 
   canvas->texts.push_back(txt);
   canvas->current_offset += offset; 

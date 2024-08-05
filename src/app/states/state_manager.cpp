@@ -75,7 +75,7 @@ static void menu_state_init(StateManger* state, Font* font) {
 static void settings_state_init(StateManger* state, Font* font) {
   UICanvas* canvas = state->states[STATE_SETTINGS];
 
-  ui_canvas_push_text(canvas, "SETTINGS", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0.0f, 10.0f));
+  ui_canvas_push_text(canvas, "SETTINGS", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(-5.0f, 20.0f));
   ui_canvas_push_button(canvas, 
                         "MENU", 
                         30.0f, 
@@ -87,7 +87,7 @@ static void settings_state_init(StateManger* state, Font* font) {
 }
 
 static void win_state_init(StateManger* state, Font* font) {
-  ui_canvas_push_text(state->states[STATE_WIN], "ALL PROBLEMS SOLVED!", 50.0f, glm::vec4(1.0f), UI_ANCHOR_CENTER);
+  ui_canvas_push_text(state->states[STATE_WIN], "ALL THE PROBLEMS ARE SOLVED!", 50.0f, glm::vec4(1.0f), UI_ANCHOR_CENTER);
 }
 
 static void lose_state_init(StateManger* state, Font* font) {
