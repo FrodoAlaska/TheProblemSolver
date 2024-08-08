@@ -412,8 +412,8 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
 
 void render_model(const Transform& transform, Model* model) {
   if(!model) {
-    return;
     // @TODO: Warn logger or assert here???? 
+    return;
   }
 
   for(u32 i = 0; i < model->meshes.size(); i++) {

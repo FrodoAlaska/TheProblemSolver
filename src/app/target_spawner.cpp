@@ -11,7 +11,7 @@
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
-#define MAX_TARGETS 5
+#define MAX_TARGETS 6
 #define MAX_COUNTER_LIMIT 120.0f
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -34,22 +34,19 @@ static void spawn_targets(TargetSpawner* spawner) {
 void target_spawner_init(TargetSpawner* spawner, std::vector<Object*>& objs) {
   spawner->objects = &objs;
 
-  spawner->spawn_counter = 0.0f; 
-  spawner->spawn_counter_limit = MAX_COUNTER_LIMIT;
-
   // Preloading all of the positions that will be used 
   // and the targets too
   for(u32 i = 0; i < MAX_TARGETS; i++) {
-    spawner->objects->push_back(object_create(glm::vec3(1.0f), PhysicsBodyDesc {
-      .position = glm::vec3(50.0f, -0.1f, i * 5.0f), 
-      .type = PHYSICS_BODY_DYNAMIC,
-    }, "target_texture"));
+    Transform trans; 
+    transform_create(&trans, glm::vec3(50.0f, 5.0f, i * 3.0f));
+    transform_scale(&trans, glm::vec3(1.0f));
+
+    spawner->objects->push_back(object_create(trans, glm::vec3(1.0f), PHYSICS_BODY_DYNAMIC, "target_texture"));
   }
 
+  spawner->spawn_counter = 0.0f; 
+  spawner->spawn_counter_limit = MAX_COUNTER_LIMIT;
   spawner->can_spawn = false;
-
-  spawner->frames = 0; // Just counts the frames
-  spawner->wait_frames = 300; // How much to wait before deactivating the target
 }
 
 void target_spawner_hit(TargetSpawner* spawner, Object* obj, const Ray& ray) {
@@ -59,9 +56,6 @@ void target_spawner_hit(TargetSpawner* spawner, Object* obj, const Ray& ray) {
 
   // Be with the force!!!
   physics_body_apply_linear_impulse(obj->body, -ray.direction * 50.0f);
-
-  // Object will be deactivated later on
-  spawner->inactive_objects.push(obj); 
 }
 
 void target_spawner_update(TargetSpawner* spawner) {
@@ -87,7 +81,6 @@ void target_spawner_update(TargetSpawner* spawner) {
 }
 
 void target_spawner_reset(TargetSpawner* spawner) {
-  spawner->frames = 0;
   spawner->spawn_counter = 0; 
   spawner->spawn_counter_limit = MAX_COUNTER_LIMIT;
   spawner->can_spawn = false;
@@ -95,7 +88,8 @@ void target_spawner_reset(TargetSpawner* spawner) {
   // Resetting all of the objects to their original positions
   for(u32 i = 0; i < MAX_TARGETS; i++) {
     spawner->objects->at(i)->body->linear_velocity = glm::vec3(0.0f);
-    transform_translate(&spawner->objects->at(i)->body->transform, glm::vec3(50.0f, -0.1f, i * 5.0f)); 
+    transform_translate(&spawner->objects->at(i)->body->transform, glm::vec3(50.0f, 5.0f, i * 3.0f)); 
+    transform_translate(&spawner->objects->at(i)->transform, glm::vec3(50.0f, 5.0f, i * 3.0f)); 
   }
 }
 /////////////////////////////////////////////////////////////////////////////////

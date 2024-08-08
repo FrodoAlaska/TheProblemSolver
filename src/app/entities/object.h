@@ -4,6 +4,7 @@
 #include "physics/collider.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
+#include "math/transform.h"
 
 #include <glm/vec3.hpp>
 
@@ -12,6 +13,7 @@
 // Object
 /////////////////////////////////////////////////////////////////////////////////
 struct Object {
+  Transform transform;
   PhysicsBody* body; 
   BoxCollider collider;
   Mesh* mesh;
@@ -23,7 +25,7 @@ struct Object {
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Object* object_create(const glm::vec3& scale, const PhysicsBodyDesc desc, const std::string& texture_id, const bool active = true);
+Object* object_create(const Transform transform, const glm::vec3& coll_scale, const PhysicsBodyType type, const std::string& texture_id);
 void object_destroy(Object* obj);
 void object_render(Object* obj);
 

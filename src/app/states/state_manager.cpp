@@ -133,7 +133,7 @@ void state_manager_shutdown(StateManger* state) {
 
 void state_manager_update(StateManger* state) {
   if(state->current_state != STATE_GAME) {
-    return;
+    return; 
   }
 
   // @NOTE: This is really really bad but it works so it's fine 
@@ -147,11 +147,7 @@ void state_manager_update(StateManger* state) {
 
 void state_manager_render(StateManger* state) {
   renderer_begin(&state->game_state.camera);
-  
-  if(state->current_state == STATE_GAME) {
-    game_state_render(&state->game_state);
-  }
-  
+  game_state_render(&state->game_state);
   renderer_end();
 }
 

@@ -13,15 +13,10 @@
 /////////////////////////////////////////////////////////////////////////////////
 struct TargetSpawner {
   std::vector<Object*>* objects; 
-  std::queue<Object*> inactive_objects;
-
-  f32 spawn_counter, spawn_counter_limit;
   std::queue<glm::vec3> empty_seats;
 
+  f32 spawn_counter, spawn_counter_limit;
   bool can_spawn;
-
-  u32 frames; 
-  u32 wait_frames;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

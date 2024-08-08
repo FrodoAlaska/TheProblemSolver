@@ -22,10 +22,8 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
-  // Adding resources/assets 
+  // Adding the main font 
   Font* font = resources_add_font("fonts/Kleader.ttf", "default_font");
-  resources_add_texture("platform_texture", "textures/stone_texture.jpg");
-  resources_add_texture("target_texture", "textures/container.jpg");
 
   // Setting the default font 
   renderer2d_set_default_font(font);

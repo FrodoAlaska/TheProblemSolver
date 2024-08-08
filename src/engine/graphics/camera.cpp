@@ -37,12 +37,12 @@ Camera camera_create(const glm::vec3& position, const glm::vec3& target) {
   cam.direction.y = glm::sin(glm::radians(cam.pitch));
   cam.direction.z = glm::sin(glm::radians(cam.yaw)) * glm::cos(glm::radians(cam.pitch));
   cam.front       = glm::normalize(cam.direction);
-
-  cam.view = glm::mat4(0.0f);
-  cam.projection = glm::mat4(0.0f);
+  
+  cam.view = glm::mat4(1.0f);
+  cam.projection = glm::mat4(1.0f);
   cam.view_projection = glm::mat4(1.0f);
 
-  cam.can_move        = true;
+  cam.can_move = true;
 
   return cam;
 }
@@ -52,7 +52,6 @@ void camera_update(Camera* camera) {
 
   camera->view = glm::lookAt(camera->position, camera->position + camera->front, camera->up);
   camera->projection = glm::perspective(glm::radians(camera->zoom), aspect_ratio, 0.1f, 100.0f);
-
   camera->view_projection = camera->projection * camera->view;
 
   if(camera->can_move) {

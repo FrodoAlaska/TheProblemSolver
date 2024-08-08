@@ -1,7 +1,12 @@
 #include "game_state.h"
 #include "core/clock.h"
 #include "core/input.h"
+#include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
+#include "math/transform.h"
+#include "physics/collider.h"
+#include "physics/physics_body.h"
+#include "resources/model.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
@@ -11,8 +16,12 @@
 #include "ui/ui_anchor.h"
 #include "ui/ui_text.h"
 #include "engine/physics/physics_world.h"
+#include "engine/resources/resource_manager.h"
 
 #include <vector>
+
+static Model* model;
+static Transform model_transform;
 
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
@@ -55,18 +64,35 @@ static void pause_screen_render(GameState* game) {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void game_state_init(GameState* game) {
-  // Camera init 
-  game->camera = camera_create(glm::vec3(35.0f, 0.0f, 10.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
+  // Resources init 
+  resources_add_texture("target_texture", "textures/target_poster.png");
+  resources_add_texture("ground_texture", "textures/sand_texture.png");
+  resources_add_texture("platform_texture", "textures/container.png");
+  model = resources_add_model("bottle_model", "models/Bottle/BeerBottle.obj");
+  game->cubemap = resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
+  game->crosshair = resources_add_texture("crosshair", "textures/crosshair006.png");
 
-  // Create the platform 
-  game->objects.push_back(object_create(glm::vec3(1.5f, 50.0f, 22.0f), PhysicsBodyDesc{
-    .position = glm::vec3(50.0f, -27.0f, 10.0f), 
-    .type = PHYSICS_BODY_STATIC, 
-  }, "platform_texture"));
+  // Camera init 
+  game->camera = camera_create(glm::vec3(30.0f, 0.0f, 7.74f), glm::vec3(-3.0f, 0.0f, 0.0f));
+
+  // Create the platforms 
+  for(u32 i = 0; i < 6; i++) {
+    Transform trans;
+    transform_create(&trans, glm::vec3(50.0f, -1.75f, i * 3.0f));
+    transform_scale(&trans, glm::vec3(2.0f));
+
+    game->objects.push_back(object_create(trans, glm::vec3(2.0f), PHYSICS_BODY_STATIC, "platform_texture"));
+  } 
+
+  // Ground 
+  Transform trans;
+  transform_create(&trans, glm::vec3(50.0f, -3.3f, 3.0f));
+  transform_scale(&trans, glm::vec3(50.0f, 0.1f, 50.0f));
+  game->objects.push_back(object_create(trans, glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
-  count_timer_create(&game->timer, 10, 0, true);
+  count_timer_create(&game->timer, 0, 10, true);
   hit_manager_init(&game->hit_manager);
   task_menu_init(&game->task_menu);
 
@@ -83,7 +109,7 @@ void game_state_update(GameState* game) {
   if(game->is_paused) {
     return;
   }
- 
+
   // Physics update
   physics_world_update(gclock_delta_time());
 
@@ -125,6 +151,9 @@ void game_state_update(GameState* game) {
 }
 
 void game_state_render(GameState* game) {
+  // Render the cubemap 
+  render_cubemap(game->cubemap, &game->camera);
+  
   // Render the objects
   for(auto& obj : game->objects) {
     object_render(obj);
@@ -134,6 +163,9 @@ void game_state_render(GameState* game) {
   for(auto& target : game->targets) {
     object_render(target);
   }
+
+  // collider_debug_render(game->targets[0]->body->transform, &game->targets[0]->body->collider);
+  // render_model(game->targets[0]->transform, model);
 }
 
 void game_state_render_ui(GameState* game) {
@@ -143,8 +175,8 @@ void game_state_render_ui(GameState* game) {
   // Rendering the timer
   count_timer_render(&game->timer);
 
-  // Rendering radical 
-  render_quad(window_get_size() / 2.0f - 8.0f, glm::vec2(16.0f), glm::vec4(1.0f));
+  // Rendering crosshair 
+  render_texture(game->crosshair, window_get_size() / 2.0f - 8.0f, glm::vec2(96.0f), glm::vec4(1.0f));
  
   // Rendering the tasks
   task_menu_render(&game->task_menu);

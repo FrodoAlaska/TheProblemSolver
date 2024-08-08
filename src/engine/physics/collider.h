@@ -51,4 +51,6 @@ CollisionPoint sphere_aabb_colliding(SphereCollider* sphere, const Transform* sp
 
 bool aabb_colliding(const glm::vec3& pos_a, const glm::vec3& size_a, const glm::vec3& pos_b, const glm::vec3& size_b);
 CollisionPoint aabb_colliding_ex(BoxCollider* box_a, const Transform* trans_a, BoxCollider* box_b, const Transform* trans_b);
+
+void collider_debug_render(const Transform& transform, const Collider* collider);
 /////////////////////////////////////////////////////////////////////////////////

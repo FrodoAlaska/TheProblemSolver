@@ -1,11 +1,10 @@
 # TODO:
-- Play-testing: round 1 / adjust difficulty, spawning, and other things too
-- Visuals -> models, cubemaps, text popping up when for hits, combos, critical hits, time increases, and etc.
-- Play-testing: round 2 
+- Models 
 - Sfx and music
-- Play-testing: round 3 
+- Better menus and settings menu
+- Polish -> Particles, text popping up for hits, combos, critical hits, time increases, and etc.
 
 # FIX 
-- Let the camera stand back a bit
+- Scale up the UI a bit
 - Disable camera movements 
 - Adjust sensitivity in the settings menu

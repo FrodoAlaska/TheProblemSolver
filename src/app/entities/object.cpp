@@ -1,5 +1,6 @@
 #include "object.h"
 #include "graphics/renderer.h"
+#include "math/transform.h"
 #include "physics/physics_body.h"
 #include "physics/collider.h"
 #include "physics/physics_world.h"
@@ -12,10 +13,17 @@
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Object* object_create(const glm::vec3& scale, const PhysicsBodyDesc desc, const std::string& texture_id, const bool active) {
+Object* object_create(const Transform transform, const glm::vec3& coll_scale, const PhysicsBodyType type, const std::string& texture_id) {
   Object* obj = new Object{};
+
+  obj->transform = transform;
+
+  PhysicsBodyDesc desc = {
+    .position = transform.position, 
+    .type = type,
+  };
   obj->body = physics_world_add_body(desc);
-  obj->collider = BoxCollider{.half_size = scale / 2.0f};
+  obj->collider = BoxCollider{.half_size = coll_scale / 2.0f};
   physics_body_add_collider(obj->body, COLLIDER_BOX, &obj->collider);
 
   obj->mesh = mesh_create();
@@ -28,7 +36,7 @@ Object* object_create(const glm::vec3& scale, const PhysicsBodyDesc desc, const 
     obj->material = material_load(texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels), nullptr, resources_get_shader("default_shader-3d"));
   }
   
-  obj->is_active = active;
+  obj->is_active = true;
 
   return obj;
 }
@@ -50,7 +58,9 @@ void object_render(Object* obj) {
     return;
   }
 
-  render_mesh(obj->body->transform, obj->mesh, obj->material);
+  glm::vec3 body_trans = obj->body->transform.position;
+  transform_translate(&obj->transform, body_trans);
+  render_mesh(obj->transform, obj->mesh, obj->material);
 }
 
 void object_activate(Object* obj, const bool active) {

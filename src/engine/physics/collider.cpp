@@ -1,6 +1,7 @@
 #include "collider.h"
 #include "collision_data.h"
 #include "defines.h"
+#include "graphics/renderer.h"
 #include "math/transform.h"
 
 #include <glm/vec3.hpp>
@@ -161,5 +162,17 @@ CollisionPoint aabb_colliding_ex(BoxCollider* box_a, const Transform* trans_a, B
     .depth = depth,
     .has_collided = true,
   };
+}
+
+void collider_debug_render(const Transform& transform, const Collider* collider) {
+  switch(collider->type) {
+    case COLLIDER_BOX:  {
+      BoxCollider* box = (BoxCollider*)collider;
+      render_cube(transform.position, transform.scale, glm::vec4(1.0f));
+    }
+      break;
+    case COLLIDER_SPHERE: 
+      break;
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////

@@ -174,14 +174,14 @@ Material* resources_add_material(const std::string& id,
 Model* resources_add_model(const std::string& id, const std::string& path) {
   std::string full_path = s_res_man.res_path + path; 
 
-  s_res_man.models[id] = model_load(path);
+  s_res_man.models[id] = model_load(full_path);
   return s_res_man.models[id];
 }
 
 CubeMap* resources_add_cubemap(const std::string& id, const std::string& path) {
   std::string full_path = s_res_man.res_path + path; 
 
-  s_res_man.cubemaps[id] = cubemap_load(path);
+  s_res_man.cubemaps[id] = cubemap_load(full_path);
   return s_res_man.cubemaps[id];
 }
 
