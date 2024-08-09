@@ -1,6 +1,7 @@
 #pragma once
 
 #include "defines.h"
+#include "entities/target.h"
 #include "graphics/camera.h"
 #include "resources/cubemap.h"
 #include "resources/texture.h"
@@ -19,7 +20,7 @@ struct GameState {
   Camera camera;
 
   std::vector<Object*> objects;
-  std::vector<Object*> targets;
+  std::vector<Target*> targets;
 
   TargetSpawner target_spawner;
   CountTimer timer;

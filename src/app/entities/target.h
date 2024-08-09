@@ -2,20 +2,18 @@
 
 #include "physics/physics_body.h"
 #include "physics/collider.h"
-#include "resources/material.h"
-#include "resources/mesh.h"
+#include "math/transform.h"
+#include "resources/model.h"
 
 #include <glm/vec3.hpp>
 
-#include <string>
-
-// Object
+// Target
 /////////////////////////////////////////////////////////////////////////////////
-struct Object {
+struct Target {
+  Transform transform;
   PhysicsBody* body; 
   BoxCollider collider;
-  Mesh* mesh;
-  Material* material;
+  Model* model;
 
   bool is_active;
 };
@@ -23,7 +21,8 @@ struct Object {
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Object* object_create(const glm::vec3& pos, const glm::vec3& coll_scale, const PhysicsBodyType type, const std::string& texture_id);
-void object_destroy(Object* obj);
-void object_render(Object* obj);
+Target* target_create(const glm::vec3& pos);
+void target_destroy(Target* target);
+void target_render(Target* target);
+void target_active(Target* target, const bool active);
 /////////////////////////////////////////////////////////////////////////////////

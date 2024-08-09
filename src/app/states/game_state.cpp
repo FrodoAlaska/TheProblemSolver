@@ -6,7 +6,6 @@
 #include "math/transform.h"
 #include "physics/collider.h"
 #include "physics/physics_body.h"
-#include "resources/model.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
@@ -20,31 +19,30 @@
 
 #include <vector>
 
-static Model* model;
-static Transform model_transform;
+static bool is_debug = false;
 
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
 static void check_collisions(GameState* game) {
   for(u32 i = 0; i < game->targets.size(); i++) {
-    Object* object = game->targets[i];
+    Target* target = game->targets[i];
 
     Ray ray = {
       .position = game->camera.position, 
       .direction = game->camera.direction,
     };
 
-    RayIntersection intersect = ray_intersect(&ray, &object->body->transform, &object->collider);
+    RayIntersection intersect = ray_intersect(&ray, &target->body->transform, &target->collider);
     if(!intersect.has_intersected) {
       continue;
     }
      
     // There's a HIT!!
-    game->score += hit_manager_calc_hit_score(&game->hit_manager, object->body->transform.position, intersect.intersection_point);
-    target_spawner_hit(&game->target_spawner, object, ray);
+    game->score += hit_manager_calc_hit_score(&game->hit_manager, target->body->transform.position, intersect.intersection_point);
+    target_spawner_hit(&game->target_spawner, target, ray);
 
     // Critical hit?? 
-    if(hit_manager_is_critical(&game->hit_manager, object->body->transform.position, intersect.intersection_point)) {
+    if(hit_manager_is_critical(&game->hit_manager, target->body->transform.position, intersect.intersection_point)) {
       game->hit_manager.in_combo = true;
       game->hit_manager.total_combo++;
     }
@@ -65,10 +63,8 @@ static void pause_screen_render(GameState* game) {
 /////////////////////////////////////////////////////////////////////////////////
 void game_state_init(GameState* game) {
   // Resources init 
-  resources_add_texture("target_texture", "textures/target_poster.png");
   resources_add_texture("ground_texture", "textures/sand_texture.png");
   resources_add_texture("platform_texture", "textures/container.png");
-  model = resources_add_model("bottle_model", "models/Bottle/BeerBottle.obj");
   game->cubemap = resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
   game->crosshair = resources_add_texture("crosshair", "textures/crosshair006.png");
 
@@ -77,18 +73,11 @@ void game_state_init(GameState* game) {
 
   // Create the platforms 
   for(u32 i = 0; i < 6; i++) {
-    Transform trans;
-    transform_create(&trans, glm::vec3(50.0f, -1.75f, i * 3.0f));
-    transform_scale(&trans, glm::vec3(2.0f));
-
-    game->objects.push_back(object_create(trans, glm::vec3(2.0f), PHYSICS_BODY_STATIC, "platform_texture"));
+    game->objects.push_back(object_create(glm::vec3(50.0f, -1.75f, i * 3.0f), glm::vec3(2.0f), PHYSICS_BODY_STATIC, "platform_texture"));
   } 
 
   // Ground 
-  Transform trans;
-  transform_create(&trans, glm::vec3(50.0f, -3.3f, 3.0f));
-  transform_scale(&trans, glm::vec3(50.0f, 0.1f, 50.0f));
-  game->objects.push_back(object_create(trans, glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
+  game->objects.push_back(object_create(glm::vec3(50.0f, -3.3f, 3.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
@@ -108,6 +97,10 @@ void game_state_update(GameState* game) {
 
   if(game->is_paused) {
     return;
+  }
+
+  if(input_key_pressed(KEY_Q)) {
+    is_debug = !is_debug;
   }
 
   // Physics update
@@ -161,11 +154,12 @@ void game_state_render(GameState* game) {
 
   // Render the targets 
   for(auto& target : game->targets) {
-    object_render(target);
-  }
+    if(is_debug) {
+      collider_debug_render(target->body->transform, &target->body->collider);
+    }
 
-  // collider_debug_render(game->targets[0]->body->transform, &game->targets[0]->body->collider);
-  // render_model(game->targets[0]->transform, model);
+    target_render(target);
+  }
 }
 
 void game_state_render_ui(GameState* game) {
@@ -176,8 +170,9 @@ void game_state_render_ui(GameState* game) {
   count_timer_render(&game->timer);
 
   // Rendering crosshair 
-  render_texture(game->crosshair, window_get_size() / 2.0f - 8.0f, glm::vec2(96.0f), glm::vec4(1.0f));
- 
+  // render_texture(game->crosshair, window_get_size() / 2.0f - 4.0f, glm::vec2(96.0f), glm::vec4(1.0f));
+  render_quad(window_get_size() / 2.0f - 2.0f, glm::vec2(4.0f), glm::vec4(0, 0, 0, 1));
+
   // Rendering the tasks
   task_menu_render(&game->task_menu);
 

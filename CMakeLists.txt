@@ -106,6 +106,7 @@ set(APP_SOURCES
   # Entities 
   ${APP_SRC_DIR}/entities/player.cpp 
   ${APP_SRC_DIR}/entities/object.cpp 
+  ${APP_SRC_DIR}/entities/target.cpp 
 
   # Others 
   ${APP_SRC_DIR}/target_spawner.cpp 

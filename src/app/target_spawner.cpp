@@ -1,6 +1,6 @@
 #include "target_spawner.h"
 #include "defines.h"
-#include "entities/object.h"
+#include "entities/target.h"
 #include "math/transform.h"
 #include "physics/ray.h"
 
@@ -13,35 +13,35 @@
 /////////////////////////////////////////////////////////////////////////////////
 #define MAX_TARGETS 6
 #define MAX_COUNTER_LIMIT 120.0f
+#define TARGET_START_POS glm::vec3(50.0f, 1.0f, i * 3.0f)
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
 static void spawn_targets(TargetSpawner* spawner) {
-  for(auto& obj : *spawner->objects) {
-    glm::vec3 new_pos = spawner->empty_seats.front();
+  for(u32 i = 0; i < MAX_TARGETS; i++) {
+    Target* target = spawner->objects->at(i);
+
+    glm::vec3 new_pos = TARGET_START_POS;//spawner->empty_seats.front();
     spawner->empty_seats.pop();
 
     // Spawn the target
-    transform_translate(&obj->body->transform, new_pos);
-    object_activate(obj, true);  
+    transform_translate(&target->body->transform, new_pos);
+    transform_translate(&target->transform, new_pos);
+    target_active(target, true);  
   }
 }
 /////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-void target_spawner_init(TargetSpawner* spawner, std::vector<Object*>& objs) {
-  spawner->objects = &objs;
+void target_spawner_init(TargetSpawner* spawner, std::vector<Target*>& targets) {
+  spawner->objects = &targets;
 
   // Preloading all of the positions that will be used 
   // and the targets too
   for(u32 i = 0; i < MAX_TARGETS; i++) {
-    Transform trans; 
-    transform_create(&trans, glm::vec3(50.0f, 5.0f, i * 3.0f));
-    transform_scale(&trans, glm::vec3(1.0f));
-
-    spawner->objects->push_back(object_create(trans, glm::vec3(1.0f), PHYSICS_BODY_DYNAMIC, "target_texture"));
+    spawner->objects->push_back(target_create(TARGET_START_POS));
   }
 
   spawner->spawn_counter = 0.0f; 
@@ -49,13 +49,13 @@ void target_spawner_init(TargetSpawner* spawner, std::vector<Object*>& objs) {
   spawner->can_spawn = false;
 }
 
-void target_spawner_hit(TargetSpawner* spawner, Object* obj, const Ray& ray) {
+void target_spawner_hit(TargetSpawner* spawner, Target* target, const Ray& ray) {
   // Add new empty seat 
-  glm::vec3 object_pos = obj->body->transform.position;
+  glm::vec3 object_pos = target->transform.position;
   spawner->empty_seats.push(glm::vec3(object_pos.x, -0.1f, object_pos.z));
 
   // Be with the force!!!
-  physics_body_apply_linear_impulse(obj->body, -ray.direction * 50.0f);
+  physics_body_apply_linear_impulse(target->body, -ray.direction * 50.0f);
 }
 
 void target_spawner_update(TargetSpawner* spawner) {
@@ -88,8 +88,8 @@ void target_spawner_reset(TargetSpawner* spawner) {
   // Resetting all of the objects to their original positions
   for(u32 i = 0; i < MAX_TARGETS; i++) {
     spawner->objects->at(i)->body->linear_velocity = glm::vec3(0.0f);
-    transform_translate(&spawner->objects->at(i)->body->transform, glm::vec3(50.0f, 5.0f, i * 3.0f)); 
-    transform_translate(&spawner->objects->at(i)->transform, glm::vec3(50.0f, 5.0f, i * 3.0f)); 
+    transform_translate(&spawner->objects->at(i)->body->transform, TARGET_START_POS); 
+    transform_translate(&spawner->objects->at(i)->transform, TARGET_START_POS); 
   }
 }
 /////////////////////////////////////////////////////////////////////////////////
