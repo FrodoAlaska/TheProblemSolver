@@ -1,5 +1,6 @@
 #pragma once
 
+#include "resources/cubemap.h"
 #include "resources/font.h"
 #include "states/game_state.h"
 #include "states/state_type.h"
@@ -10,6 +11,7 @@
 struct StateManger {
   StateType current_state;
 
+  CubeMap* cubemap;
   UICanvas* states[STATES_MAX]; 
   GameState game_state;
 };

@@ -3,7 +3,6 @@
 #include "defines.h"
 #include "entities/target.h"
 #include "graphics/camera.h"
-#include "resources/cubemap.h"
 #include "resources/texture.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
@@ -32,7 +31,6 @@ struct GameState {
   bool is_paused; 
   UIText pause_text;
 
-  CubeMap* cubemap;
   Texture* crosshair;
 };
 /////////////////////////////////////////////////////////////////////////////////

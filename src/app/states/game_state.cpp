@@ -1,11 +1,16 @@
 #include "game_state.h"
+#include "audio/audio_system.h"
+#include "audio/music_type.h"
+#include "audio/sound_type.h"
 #include "core/clock.h"
 #include "core/input.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
+#include "math/rand.h"
 #include "math/transform.h"
 #include "physics/collider.h"
 #include "physics/physics_body.h"
+#include "physics/ray.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
@@ -24,8 +29,12 @@ static bool is_debug = false;
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
 static void check_collisions(GameState* game) {
+  // Gun VS. Bottles
   for(u32 i = 0; i < game->targets.size(); i++) {
     Target* target = game->targets[i];
+    if(!target->is_active) {
+      continue;
+    }
 
     Ray ray = {
       .position = game->camera.position, 
@@ -36,6 +45,9 @@ static void check_collisions(GameState* game) {
     if(!intersect.has_intersected) {
       continue;
     }
+    
+    // Bottle sound
+    audio_system_play(SOUND_BOTTLE_BREAK, random_f32(0.8f, 1.0f));
      
     // There's a HIT!!
     game->score += hit_manager_calc_hit_score(&game->hit_manager, target->body->transform.position, intersect.intersection_point);
@@ -52,6 +64,24 @@ static void check_collisions(GameState* game) {
 
     break; // The ray is more likely (and more desirably) to hit one object
   }
+
+  // Gun VS. Box 
+  // (Index starts at 1 to skip the ground)
+  for(u32 i = 1; i < game->objects.size(); i++) {
+    Object* obj = game->objects[i];
+
+    Ray ray = {
+      .position = game->camera.position, 
+      .direction = game->camera.direction,
+    };
+
+    RayIntersection intersect = ray_intersect(&ray, &obj->body->transform, &obj->collider);
+    if(!intersect.has_intersected) {
+      continue;
+    }
+
+    audio_system_play(SOUND_BOX_HIT, 1.0f);
+  }
 }
 
 static void pause_screen_render(GameState* game) {
@@ -62,22 +92,19 @@ static void pause_screen_render(GameState* game) {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void game_state_init(GameState* game) {
-  // Resources init 
-  resources_add_texture("ground_texture", "textures/sand_texture.png");
-  resources_add_texture("platform_texture", "textures/container.png");
-  game->cubemap = resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
-  game->crosshair = resources_add_texture("crosshair", "textures/crosshair006.png");
+  // Textures init 
+  game->crosshair = resources_get_texture("crosshair");
 
   // Camera init 
   game->camera = camera_create(glm::vec3(30.0f, 0.0f, 7.74f), glm::vec3(-3.0f, 0.0f, 0.0f));
+  
+  // Ground 
+  game->objects.push_back(object_create(glm::vec3(50.0f, -3.3f, 3.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
 
   // Create the platforms 
   for(u32 i = 0; i < 6; i++) {
     game->objects.push_back(object_create(glm::vec3(50.0f, -1.75f, i * 3.0f), glm::vec3(2.0f), PHYSICS_BODY_STATIC, "platform_texture"));
   } 
-
-  // Ground 
-  game->objects.push_back(object_create(glm::vec3(50.0f, -3.3f, 3.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
@@ -87,12 +114,15 @@ void game_state_init(GameState* game) {
 
   // Pause screen init 
   game->is_paused = false; 
-  ui_text_create(&game->pause_text, renderer2d_get_default_font(), "PAUSED", 30.0f, UI_ANCHOR_CENTER, glm::vec4(0, 1, 0, 1));
+  ui_text_create(&game->pause_text, renderer2d_get_default_font(), "PAUSED", 30.0f, UI_ANCHOR_CENTER, glm::vec4(0, 0.8f, 0, 1), glm::vec2(0.0f, -20.0f));
 }
 
 void game_state_update(GameState* game) {
   if(input_key_pressed(KEY_ESCAPE)) {
     game->is_paused = !game->is_paused;
+
+    // Enabling the tasks list when paused
+    game->task_menu.is_active = game->is_paused;
   }
 
   if(game->is_paused) {
@@ -114,16 +144,18 @@ void game_state_update(GameState* game) {
   target_spawner_update(&game->target_spawner);
   count_timer_update(&game->timer);
   hit_manager_update(&game->hit_manager);
-
-  // Enabling/disabling the task menu
-  if(input_key_pressed(KEY_T)) {
-    game->task_menu.is_active = !game->task_menu.is_active;
-  } 
+  
+  // Checking if the current balance is sufficient enough 
+  // for completing a task
+  task_menu_update(&game->task_menu, &game->score);
 
   // Player shooting the gun
   if(!input_button_pressed(MOUSE_BUTTON_LEFT)) {
     return;
   }
+
+  // Gun shot sound
+  audio_system_play(SOUND_GUN_SHOT, random_f32(0.7f, 1.0f));
 
   // Checking for ray collisions against the targets.
   check_collisions(game);
@@ -137,16 +169,9 @@ void game_state_update(GameState* game) {
   if(game->hit_manager.total_combo == 0) {
     hit_manager_end_combo(&game->hit_manager);
   }
-  
-  // Checking if the current balance is sufficient enough 
-  // for completing a task
-  task_menu_update(&game->task_menu, &game->score);
 }
 
 void game_state_render(GameState* game) {
-  // Render the cubemap 
-  render_cubemap(game->cubemap, &game->camera);
-  
   // Render the objects
   for(auto& obj : game->objects) {
     object_render(obj);
@@ -172,7 +197,7 @@ void game_state_render_ui(GameState* game) {
   // Rendering crosshair 
   // render_texture(game->crosshair, window_get_size() / 2.0f - 4.0f, glm::vec2(96.0f), glm::vec4(1.0f));
   render_quad(window_get_size() / 2.0f - 2.0f, glm::vec2(4.0f), glm::vec4(0, 0, 0, 1));
-
+    
   // Rendering the tasks
   task_menu_render(&game->task_menu);
 
@@ -197,7 +222,7 @@ void game_state_reset(GameState* game) {
   // Tasks reset 
   game->task_menu.current_task = 0; 
   game->task_menu.is_active = false;
-  game->task_menu.strikethroughs.clear();
+  game->task_menu.has_completed_all = false;
 
   // Input reset
   input_cursor_show(false);
@@ -206,5 +231,8 @@ void game_state_reset(GameState* game) {
   // Camera reset
   game->camera.yaw = -90.0f;
   game->camera.pitch = 0.0f;
+   
+  audio_system_stop(MUSIC_MENU);
+  audio_system_play(MUSIC_BACKGROUND, 1.0f);
 }
 /////////////////////////////////////////////////////////////////////////////////

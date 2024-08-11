@@ -22,7 +22,7 @@ Target* target_create(const glm::vec3& pos) {
   };
 
   target->body = physics_world_add_body(desc);
-  target->collider = BoxCollider{.half_size = glm::vec3(0.5f, 1.26f, 0.35f) / 2.0f};
+  target->collider = BoxCollider{.half_size = glm::vec3(0.38f, 1.26f, 0.37f) / 2.0f};
   physics_body_add_collider(target->body, COLLIDER_BOX, &target->collider);
 
   target->model = resources_add_model("bottle", "models/Bottle/BeerBottle.obj");
@@ -43,7 +43,7 @@ void target_render(Target* target) {
   }
 
   glm::vec3 body_trans = target->body->transform.position;
-  transform_translate(&target->transform, body_trans + glm::vec3(0.0f, -0.66f, 3.262f));
+  transform_translate(&target->transform, body_trans + glm::vec3(-0.1f, -0.66f, 3.262f));
   render_model(target->transform, target->model);
 }
 

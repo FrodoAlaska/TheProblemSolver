@@ -1,4 +1,6 @@
 #include "ui_button.h"
+#include "audio/audio_system.h"
+#include "audio/sound_type.h"
 #include "core/input.h"
 #include "defines.h"
 #include "ui/ui_text.h"
@@ -49,9 +51,12 @@ void ui_button_render(UIButton* button) {
   if(!button->is_active) {
     return;
   }
-
+  
   if(ui_button_pressed(button)) {
     button->color.a = 0.25f;
+
+    // Play ui click sound 
+    audio_system_play(SOUND_UI_CLICK, 1.0f);
 
     if(button->callback) {
       button->callback(button, BUTTON_STATE_PRESSED, button->user_data);

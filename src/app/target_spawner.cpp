@@ -1,4 +1,6 @@
 #include "target_spawner.h"
+#include "audio/audio_system.h"
+#include "audio/sound_type.h"
 #include "defines.h"
 #include "entities/target.h"
 #include "math/transform.h"
@@ -12,13 +14,15 @@
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
 #define MAX_TARGETS 6
-#define MAX_COUNTER_LIMIT 120.0f
+#define MAX_COUNTER_LIMIT 50.0f
 #define TARGET_START_POS glm::vec3(50.0f, 1.0f, i * 3.0f)
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
 static void spawn_targets(TargetSpawner* spawner) {
+  audio_system_play(SOUND_BOTTLE_SPAWN, 1.0f);
+
   for(u32 i = 0; i < MAX_TARGETS; i++) {
     Target* target = spawner->objects->at(i);
 
@@ -54,8 +58,7 @@ void target_spawner_hit(TargetSpawner* spawner, Target* target, const Ray& ray) 
   glm::vec3 object_pos = target->transform.position;
   spawner->empty_seats.push(glm::vec3(object_pos.x, -0.1f, object_pos.z));
 
-  // Be with the force!!!
-  physics_body_apply_linear_impulse(target->body, -ray.direction * 50.0f);
+  target_active(target, false);
 }
 
 void target_spawner_update(TargetSpawner* spawner) {

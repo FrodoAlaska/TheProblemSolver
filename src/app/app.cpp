@@ -1,4 +1,7 @@
 #include "app.h"
+#include "audio/audio_system.h"
+#include "audio/music_type.h"
+#include "audio/sound_type.h"
 #include "core/input.h"
 #include "core/window.h"
 #include "engine/graphics/renderer.h"
@@ -22,8 +25,27 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
-  // Adding the main font 
+  // Adding font 
   Font* font = resources_add_font("fonts/Kleader.ttf", "default_font");
+
+  // Adding textures 
+  resources_add_texture("ground_texture", "textures/sand_texture.png");
+  resources_add_texture("platform_texture", "textures/container.png");
+  resources_add_texture("crosshair", "textures/crosshair006.png");
+  resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
+
+  // Adding music 
+  audio_system_add_music(MUSIC_MENU, "assets/music/menu_theme.mp3");
+  audio_system_add_music(MUSIC_BACKGROUND, "assets/music/background_music.mp3");
+  audio_system_add_music(MUSIC_WIN, "assets/music/victory_song.mp3");
+  
+  // Adding SFX
+  audio_system_add_sound(SOUND_GUN_SHOT, "assets/sfx/gun_shot.mp3");
+  audio_system_add_sound(SOUND_BOTTLE_BREAK, "assets/sfx/bottle_break.mp3");
+  audio_system_add_sound(SOUND_BOTTLE_SPAWN, "assets/sfx/bottle_spawn.mp3");
+  audio_system_add_sound(SOUND_BOX_HIT, "assets/sfx/box_hit.wav");
+  audio_system_add_sound(SOUND_TASK_COMPLETE, "assets/sfx/task_complete.wav");
+  audio_system_add_sound(SOUND_UI_CLICK, "assets/sfx/ui_click.mp3");
 
   // Setting the default font 
   renderer2d_set_default_font(font);
