@@ -4,7 +4,6 @@
 #include "audio/sound_type.h"
 #include "core/clock.h"
 #include "core/input.h"
-#include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
 #include "math/rand.h"
 #include "math/transform.h"
@@ -22,6 +21,7 @@
 #include "engine/physics/physics_world.h"
 #include "engine/resources/resource_manager.h"
 
+#include <cstdio>
 #include <vector>
 
 static bool is_debug = false;
@@ -144,7 +144,7 @@ void game_state_update(GameState* game) {
   target_spawner_update(&game->target_spawner);
   count_timer_update(&game->timer);
   hit_manager_update(&game->hit_manager);
-  
+
   // Checking if the current balance is sufficient enough 
   // for completing a task
   task_menu_update(&game->task_menu, &game->score);
@@ -220,9 +220,7 @@ void game_state_reset(GameState* game) {
   game->hit_manager.combo_timer = 0.0f;
 
   // Tasks reset 
-  game->task_menu.current_task = 0; 
-  game->task_menu.is_active = false;
-  game->task_menu.has_completed_all = false;
+  task_menu_reset(&game->task_menu);
 
   // Input reset
   input_cursor_show(false);

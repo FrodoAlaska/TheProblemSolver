@@ -118,7 +118,7 @@ static void win_state_init(StateManger* state, Font* font) {
 static void lose_state_init(StateManger* state, Font* font) {
   UICanvas* canvas = state->states[STATE_LOSE];
 
-  ui_canvas_push_text(canvas, "You ran out of time... as you always do", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0.0f, 10.0f));
+  ui_canvas_push_text(canvas, "You ran out of time. As you always do", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0.0f, 10.0f));
   ui_canvas_push_button(canvas, 
                         "RE-SOLVE", 
                         30.0f, 
