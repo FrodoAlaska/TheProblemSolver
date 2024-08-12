@@ -20,9 +20,12 @@ const f64 window_get_time();
 const f32 window_get_aspect_ratio();
 GLFWwindow* window_get_handle(); 
 const KeyCode window_get_exit_key();
+const bool window_get_fullscreen();
 
+void window_set_size(const glm::vec2& size);
 void window_set_current_context();
 void window_set_vsync(const bool vsync);
+void window_set_fullscreen(const bool fullscreen);
 void window_set_close(const bool close);
 void window_set_exit_key(KeyCode key);
 /////////////////////////////////////////////////////////////////////////////////

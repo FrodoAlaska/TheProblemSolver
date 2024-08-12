@@ -15,10 +15,11 @@ struct Window {
   GLFWwindow* handle = nullptr;
 
   glm::vec2 size;
+  glm::vec2 old_size; // To return the window to its original size after being fullscreen
   glm::vec2 mouse_pos, last_mouse_pos;
   glm::vec2 mouse_offset; // How much the mouse moved this frame
 
-  bool is_focused;
+  bool is_focused, is_fullscreen;
   KeyCode exit_key;
 }; 
 
@@ -168,10 +169,12 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
   // Window init
   ////////////////////////////////////////// 
   window.size = glm::vec2(width, height);
+  window.old_size = window.size;
   window.last_mouse_pos = glm::vec2(0.0f);
   window.mouse_pos = window.last_mouse_pos; 
   window.mouse_offset = glm::vec2(0.0f);
   window.is_focused = false;
+  window.is_fullscreen = false;
   window.exit_key = KEY_ESCAPE;
 
   event_listen(EVENT_CURSOR_CHANGED, cursor_mode_change_callback);
@@ -217,12 +220,35 @@ const KeyCode window_get_exit_key() {
   return window.exit_key;
 }
 
+const bool window_get_fullscreen() {
+  return window.is_fullscreen;
+}
+
+void window_set_size(const glm::vec2& size) {
+  window.old_size = window.size; 
+  window.size = size;
+
+  glfwSetWindowSize(window.handle, size.x, size.y);
+}
+
 void window_set_current_context() {
   glfwMakeContextCurrent(window.handle);
 }
 
 void window_set_vsync(const bool vsync) {
   glfwSwapInterval(vsync);
+}
+
+void window_set_fullscreen(const bool fullscreen) {
+  window.is_fullscreen = fullscreen;
+  const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+  if(window.is_fullscreen) {
+    glfwSetWindowMonitor(window.handle, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+  }
+  else {
+    glfwSetWindowMonitor(window.handle, nullptr, 0, 0, window.old_size.x, window.old_size.y, mode->refreshRate);
+  }
 }
 
 void window_set_close(const bool close) {

@@ -6,7 +6,6 @@
 - Polish -> Particles, text popping up for hits, combos, critical hits, time increases, and etc.
 
 # FIX 
-- Something with getting the texts??
 - Timer is fucked if the game was started too quickly. Either turn vsync on or do the startup screen which will gain us some time
 - More accruate colliders
 - Scale up the UI a bit

@@ -3,6 +3,7 @@
 #include "audio/music_type.h"
 #include "core/event.h"
 #include "core/input.h"
+#include "core/window.h"
 #include "count_timer.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
@@ -158,6 +159,10 @@ void state_manager_shutdown(StateManger* state) {
 }
 
 void state_manager_update(StateManger* state) {
+  if(input_key_pressed(KEY_F)) {
+    window_set_fullscreen(!window_get_fullscreen());
+  }
+
   if(state->current_state != STATE_GAME) {
     return; 
   }
