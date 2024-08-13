@@ -130,4 +130,16 @@ void ui_canvas_render(UICanvas* canvas) {
   }
 }
 
+void ui_canvas_resize(UICanvas* canvas) {
+  // Text resize
+  for(auto& text : canvas->texts) {
+    ui_text_resize(&text);
+  }
+
+  // Button resize 
+  for(auto& btn : canvas->buttons) {
+    ui_text_resize(&btn.text);
+    btn.position = btn.text.position - glm::vec2(5.0f, 18.0f);
+  }
+}
 /////////////////////////////////////////////////////////////////////////////////

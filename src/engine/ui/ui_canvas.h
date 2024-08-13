@@ -63,4 +63,5 @@ UIButton& ui_canvas_push_button(UICanvas* canvas,
                                 UIButtonCallback callback);
 
 void ui_canvas_render(UICanvas* canvas);
+void ui_canvas_resize(UICanvas* canvas);
 /////////////////////////////////////////////////////////////////////////////////

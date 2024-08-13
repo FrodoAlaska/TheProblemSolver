@@ -179,7 +179,7 @@ static void load_shaders() {
     "uniform vec4 u_color;\n"
     "\n"
     "void main() {\n"
-    "  frag_color = vec4(1.0f, 1.0f, 1.0f, 0.5f);\n"
+    "  frag_color = vec4(0.4f, 0.4f, 0.4f, 1.0f);\n"
     "}";
 
   std::string cubemap_shader_code = 

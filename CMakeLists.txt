@@ -113,6 +113,7 @@ set(APP_SOURCES
   ${APP_SRC_DIR}/count_timer.cpp 
   ${APP_SRC_DIR}/hit_manager.cpp 
   ${APP_SRC_DIR}/tasks_menu.cpp 
+  ${APP_SRC_DIR}/particles.cpp 
 
   # State
   ${APP_SRC_DIR}/states/state_manager.cpp 

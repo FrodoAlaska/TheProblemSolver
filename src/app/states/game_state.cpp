@@ -7,6 +7,7 @@
 #include "graphics/renderer2d.h"
 #include "math/rand.h"
 #include "math/transform.h"
+#include "particles.h"
 #include "physics/collider.h"
 #include "physics/physics_body.h"
 #include "physics/ray.h"
@@ -21,7 +22,6 @@
 #include "engine/physics/physics_world.h"
 #include "engine/resources/resource_manager.h"
 
-#include <cstdio>
 #include <vector>
 
 static bool is_debug = false;
@@ -52,6 +52,9 @@ static void check_collisions(GameState* game) {
     // There's a HIT!!
     game->score += hit_manager_calc_hit_score(&game->hit_manager, target->body->transform.position, intersect.intersection_point);
     target_spawner_hit(&game->target_spawner, target, ray);
+
+    // Emit some particles 
+    particles_emit(intersect.intersection_point);
 
     // Critical hit?? 
     if(hit_manager_is_critical(&game->hit_manager, target->body->transform.position, intersect.intersection_point)) {
@@ -96,7 +99,7 @@ void game_state_init(GameState* game) {
   game->crosshair = resources_get_texture("crosshair");
 
   // Camera init 
-  game->camera = camera_create(glm::vec3(30.0f, 0.0f, 7.74f), glm::vec3(-3.0f, 0.0f, 0.0f));
+  game->camera = camera_create(glm::vec3(30.0f, 0.0f, 7.58f), glm::vec3(-3.0f, 0.0f, 0.0f));
   
   // Ground 
   game->objects.push_back(object_create(glm::vec3(50.0f, -3.3f, 3.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, "ground_texture"));
@@ -104,7 +107,10 @@ void game_state_init(GameState* game) {
   // Create the platforms 
   for(u32 i = 0; i < 6; i++) {
     game->objects.push_back(object_create(glm::vec3(50.0f, -1.75f, i * 3.0f), glm::vec3(2.0f), PHYSICS_BODY_STATIC, "platform_texture"));
-  } 
+  }
+
+  // Particles init 
+  particles_init();
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
@@ -149,6 +155,9 @@ void game_state_update(GameState* game) {
   // for completing a task
   task_menu_update(&game->task_menu, &game->score);
 
+  // Particles update
+  particles_update();
+
   // Player shooting the gun
   if(!input_button_pressed(MOUSE_BUTTON_LEFT)) {
     return;
@@ -172,6 +181,9 @@ void game_state_update(GameState* game) {
 }
 
 void game_state_render(GameState* game) {
+  // Render the particles
+  particles_render();
+
   // Render the objects
   for(auto& obj : game->objects) {
     object_render(obj);
@@ -179,10 +191,6 @@ void game_state_render(GameState* game) {
 
   // Render the targets 
   for(auto& target : game->targets) {
-    if(is_debug) {
-      collider_debug_render(target->body->transform, &target->body->collider);
-    }
-
     target_render(target);
   }
 }
@@ -229,8 +237,12 @@ void game_state_reset(GameState* game) {
   // Camera reset
   game->camera.yaw = -90.0f;
   game->camera.pitch = 0.0f;
-   
+  
+  // Audio reset
   audio_system_stop(MUSIC_MENU);
   audio_system_play(MUSIC_BACKGROUND, 1.0f);
+
+  // Particles reset 
+  particles_reset();
 }
 /////////////////////////////////////////////////////////////////////////////////

@@ -113,4 +113,8 @@ void ui_text_render(UIText* text) {
 
   render_text(text->font, text->font_size, text->str, text->position, text->color);
 }
+
+void ui_text_resize(UIText* text) {
+  ui_text_set_position(text, text->anchor);
+}
 /////////////////////////////////////////////////////////////////////////////////

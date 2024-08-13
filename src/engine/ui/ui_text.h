@@ -62,4 +62,8 @@ void ui_text_set_string(UIText* text, const std::string& new_str);
 
 // Render the given text object
 void ui_text_render(UIText* text);
+
+// Resizes the text according to the window size 
+// This will possibly be called when the window gets resized
+void ui_text_resize(UIText* text);
 /////////////////////////////////////////////////////////////////////////////////

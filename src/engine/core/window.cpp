@@ -130,7 +130,8 @@ static void glfw_init() {
 }
 
 static bool create_handle(i32 width, i32 height, const char* title) {
-  window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  window.handle = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), nullptr);
+
   if(!window.handle) {
     printf("[ERROR]: Failed to create GLFW window\n");
     return false; 
@@ -160,7 +161,9 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
   // GLFW init 
   ////////////////////////////////////////// 
   glfw_init();
-  if(!create_handle(width, height, title)) {
+  
+  const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+  if(!create_handle(mode->width, mode->height, title)) {
     return false;
   }
   set_callbacks();
@@ -168,7 +171,7 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
 
   // Window init
   ////////////////////////////////////////// 
-  window.size = glm::vec2(width, height);
+  window.size = glm::vec2(mode->width, mode->height);
   window.old_size = window.size;
   window.last_mouse_pos = glm::vec2(0.0f);
   window.mouse_pos = window.last_mouse_pos; 
