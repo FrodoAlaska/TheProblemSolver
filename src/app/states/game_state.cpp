@@ -22,6 +22,7 @@
 #include "engine/physics/physics_world.h"
 #include "engine/resources/resource_manager.h"
 
+#include <string>
 #include <vector>
 
 static bool is_debug = false;
@@ -49,8 +50,9 @@ static void check_collisions(GameState* game) {
     // Bottle sound
     audio_system_play(SOUND_BOTTLE_BREAK, random_f32(0.8f, 1.0f));
      
-    // There's a HIT!!
-    game->score += hit_manager_calc_hit_score(&game->hit_manager, target->body->transform.position, intersect.intersection_point);
+    // There's a HIT!!! 
+    u32 hit_score = hit_manager_calc_hit_score(&game->hit_manager, target->body->transform.position, intersect.intersection_point);
+    game->score += hit_score;
     target_spawner_hit(&game->target_spawner, target, ray);
 
     // Emit some particles 
@@ -204,14 +206,17 @@ void game_state_render_ui(GameState* game) {
   // Rendering the score 
   render_text(25.0f, std::to_string(game->score) + "$", glm::vec2(10.0f, 15.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
+  // Timer render
   count_timer_render(&game->timer);
 
   // Rendering crosshair 
   // render_texture(game->crosshair, window_get_size() / 2.0f - 4.0f, glm::vec2(96.0f), glm::vec4(1.0f));
   render_quad(window_get_size() / 2.0f - 2.0f, glm::vec2(4.0f), glm::vec4(0, 0, 0, 1));
-    
+   
+  // Task menu render
   task_menu_render(&game->task_menu);
 
+  // Pause menu render
   if(game->is_paused) {
     pause_screen_render(game);
   }

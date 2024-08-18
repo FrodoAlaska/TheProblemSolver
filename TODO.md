@@ -1,6 +1,4 @@
 # TODO:
-- Make a title texture instead of a text
-- Polish -> text popping up for hits, combos, critical hits, time increases, and etc.
 - A startup screen where it has the creator's name (me) as the first few seconds of the menu theme plays and then BOOM menu 
 - Settings menu
 - Playtest -> refine the tasks

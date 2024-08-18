@@ -3,6 +3,7 @@
 #include "audio/music_type.h"
 #include "core/event.h"
 #include "core/input.h"
+#include "core/window.h"
 #include "count_timer.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
@@ -67,9 +68,11 @@ static void lose_button_change_scene(UIButton* button, const UIButtonState butto
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
 static void menu_state_init(StateManger* state, Font* font) {
+  state->title_texture = resources_get_texture("title"); 
+
   UICanvas* canvas = state->states[STATE_MENU];
 
-  ui_canvas_push_text(canvas, "The Problem Solver", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0, 10));
+  // ui_canvas_push_text(canvas, "The Problem Solver", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0, 10));
 
   ui_canvas_begin(canvas, glm::vec2(0.0f, 60.0f), UI_ANCHOR_CENTER);
   ui_canvas_push_button(canvas, "START", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
@@ -199,7 +202,11 @@ void state_manager_render_ui(StateManger* state) {
   if(state->current_state == STATE_GAME) { // Render the game's ui
     game_state_render_ui(&state->game_state);
   }
-  else { // Render the menus
+  else if(state->current_state == STATE_MENU) { 
+    ui_canvas_render(state->states[STATE_MENU]);  
+    render_texture(state->title_texture, glm::vec2(window_get_size().x / 2.0f, 128), glm::vec2(256.0f));
+  }
+  else {
     ui_canvas_render(state->states[state->current_state]);  
   }
   

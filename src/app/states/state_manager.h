@@ -2,6 +2,7 @@
 
 #include "resources/cubemap.h"
 #include "resources/font.h"
+#include "resources/texture.h"
 #include "states/game_state.h"
 #include "states/state_type.h"
 #include "ui/ui_canvas.h"
@@ -12,6 +13,8 @@ struct StateManger {
   StateType current_state;
 
   CubeMap* cubemap;
+  Texture* title_texture;
+
   UICanvas* states[STATES_MAX]; 
   GameState game_state;
 };

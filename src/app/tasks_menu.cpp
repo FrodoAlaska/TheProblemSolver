@@ -37,10 +37,10 @@ void task_menu_init(TaskMenu* menu) {
                  glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 
                  glm::vec2(0.0f, 80.0f));
 
-  for(u32 i = 1; i < TEXTS_MAX - 1; i++) {
+  for(u32 i = 1; i < TEXTS_MAX; i++) {
     ui_text_create(&menu->texts[i],
                    font,
-                   std::to_string(menu->tasks[i].cost) + "$: " + menu->tasks[i].desc, 
+                   std::to_string(menu->tasks[i - 1].cost) + "$: " + menu->tasks[i - 1].desc, 
                    25.0f, 
                    UI_ANCHOR_CENTER, 
                    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 

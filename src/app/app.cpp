@@ -32,6 +32,7 @@ bool app_init(void* user_data) {
   resources_add_texture("ground_texture", "textures/sand_texture.png");
   resources_add_texture("platform_texture", "textures/container.png");
   resources_add_texture("crosshair", "textures/crosshair006.png");
+  resources_add_texture("title", "textures/title_texture.png");
   resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
 
   // Adding music 
