@@ -76,7 +76,9 @@ void ui_button_render(UIButton* button) {
     button->color.a = 1.0f;
   }
 
+  render_quad(button->position + button->size / 2.0f, button->size + 6.0f, glm::vec4(0.0f, 0.2f, 0.0f, 1)); 
   render_quad(button->position + button->size / 2.0f, button->size, button->color);
+
   ui_text_render(&button->text);
 }
 /////////////////////////////////////////////////////////////////////////////////

@@ -60,6 +60,8 @@ static void check_collisions(GameState* game) {
     if(hit_manager_is_critical(&game->hit_manager, target->body->transform.position, intersect.intersection_point)) {
       game->hit_manager.in_combo = true;
       game->hit_manager.total_combo++;
+
+      audio_system_play(SOUND_BOTTLE_CRITICAL, 1.0f);
     }
     else { // Just a normal hit. Not a critical hit
       hit_manager_end_combo(&game->hit_manager);
@@ -124,15 +126,18 @@ void game_state_init(GameState* game) {
 }
 
 void game_state_update(GameState* game) {
+  // Pausing/unpausing the game
   if(input_key_pressed(KEY_ESCAPE)) {
     game->is_paused = !game->is_paused;
-
-    // Enabling the tasks list when paused
-    game->task_menu.is_active = game->is_paused;
   }
 
+  // Don't update anything when paused
   if(game->is_paused) {
     return;
+  }
+
+  if(input_key_pressed(KEY_T)) {
+    game->task_menu.is_active = !game->task_menu.is_active;
   }
 
   if(input_key_pressed(KEY_Q)) {
@@ -199,14 +204,12 @@ void game_state_render_ui(GameState* game) {
   // Rendering the score 
   render_text(25.0f, std::to_string(game->score) + "$", glm::vec2(10.0f, 15.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-  // Rendering the timer
   count_timer_render(&game->timer);
 
   // Rendering crosshair 
   // render_texture(game->crosshair, window_get_size() / 2.0f - 4.0f, glm::vec2(96.0f), glm::vec4(1.0f));
   render_quad(window_get_size() / 2.0f - 2.0f, glm::vec2(4.0f), glm::vec4(0, 0, 0, 1));
     
-  // Rendering the tasks
   task_menu_render(&game->task_menu);
 
   if(game->is_paused) {

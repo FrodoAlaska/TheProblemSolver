@@ -10,8 +10,9 @@
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
-#define PARTICLES_MAX 32
-#define FADE_TIME     100.0f
+#define PARTICLES_MAX  32
+#define FADE_TIME      100.0f
+#define PARTICLE_FORCE 450.0f
 /////////////////////////////////////////////////////////////////////////////////
 
 // ParticleManager
@@ -36,7 +37,7 @@ static void activate_particles(const glm::vec3& pos) {
     glm::vec3 dir = random_vec3(glm::vec3(-1.0f), glm::vec3(1.0f));
 
     transform_translate(&particle->transform, pos);
-    physics_body_apply_linear_force(particle, glm::vec3(300.0f) * dir);
+    physics_body_apply_linear_force(particle, glm::vec3(PARTICLE_FORCE) * dir);
   }
 }
 

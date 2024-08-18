@@ -1,10 +1,10 @@
 #include "tasks_menu.h"
 #include "audio/audio_system.h"
 #include "audio/sound_type.h"
+#include "core/window.h"
 #include "defines.h"
 #include "graphics/renderer2d.h"
 #include "ui/ui_anchor.h"
-#include "ui/ui_canvas.h"
 #include "ui/ui_text.h"
 
 #include <string>
@@ -23,23 +23,51 @@ void task_menu_init(TaskMenu* menu) {
   menu->tasks[8] = Task{100000, "house on river"};
 
   menu->current_task = 0;
-  menu->canvas = ui_canvas_create(renderer2d_get_default_font());
+  menu->board_size = glm::vec2(0.0f, 0.0f);
 
-  ui_canvas_begin(menu->canvas, glm::vec2(0.0f, 20.0f), UI_ANCHOR_CENTER);
-  for(u32 i = 0; i < TASKS_MAX; i++) {
-    ui_canvas_push_text(menu->canvas, std::to_string(menu->tasks[i].cost) + "$: " + menu->tasks[i].desc, 20.0f, glm::vec4(1.0f));
-    UIText text = menu->canvas->texts[i];
+  Font* font = renderer2d_get_default_font();
 
+  f32 longest_text = 0.0f;
+    
+  ui_text_create(&menu->texts[0],
+                 font,
+                 "TASKS", 
+                 40.0f, 
+                 UI_ANCHOR_TOP_CENTER, 
+                 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 
+                 glm::vec2(0.0f, 80.0f));
+
+  for(u32 i = 1; i < TEXTS_MAX - 1; i++) {
+    ui_text_create(&menu->texts[i],
+                   font,
+                   std::to_string(menu->tasks[i].cost) + "$: " + menu->tasks[i].desc, 
+                   25.0f, 
+                   UI_ANCHOR_CENTER, 
+                   glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 
+                   glm::vec2(0.0f, i * 40.0f));
+    menu->texts[i].position.y -= 230.0f; 
+
+    UIText text = menu->texts[i];
     glm::vec2 text_size = ui_text_measure_size(&text);
-    menu->strikethroughs[menu->current_task] = Rect {
+
+    menu->strikethroughs[i - 1] = Rect {
       .x = text.position.x + text_size.x / 2.0f,
       .y = text.position.y,
 
       .width = text_size.x, 
-      .height = 2.0f,
+      .height = 4.0f,
     };
+    
+
+    if(text_size.x > longest_text) {
+      longest_text = text_size.x;
+    }
+
+    menu->board_size.y += text_size.y;  
   }
-  ui_canvas_end(menu->canvas);
+
+  menu->board_size.y += 270.0f;
+  menu->board_size.x = longest_text + 35.0f;
 
   menu->is_active = false;
   menu->has_completed_all = false;
@@ -76,20 +104,30 @@ void task_menu_render(TaskMenu* menu) {
   }
 
   // Display task cost and description
-  Task task = menu->tasks[0];
+  Task task = menu->tasks[menu->current_task];
   std::string task_str = "Task: " + std::to_string(task.cost) + "$ - " + task.desc;
-  render_text(20.0f, task_str, glm::vec2(10.0f, 35.0f), glm::vec4(1.0f));
-
+  render_text(25.0f, task_str, glm::vec2(10.0f, 45.0f), glm::vec4(1.0f));
+  
+  render_text(25.0f, "[T] TASKS", glm::vec2(10.0f, 70.0f), glm::vec4(1.0f));
+  
   if(!menu->is_active) {
     return;
   }
+  
+  f32 board_x = window_get_size().x / 2.0f;
+  f32 board_y = menu->texts[0].position.y + menu->board_size.y / 2.0f - 50.0f;
+  
+  render_quad(glm::vec2(board_x, board_y), menu->board_size + 8.0f, glm::vec4(0.0f, 0.1f, 0.0f, 1.0f));
+  render_quad(glm::vec2(board_x, board_y), menu->board_size, glm::vec4(1.0f, 1.0f, 1.0f, 0.8f));
 
+  for(u32 i = 0; i < TEXTS_MAX; i++) {
+    ui_text_render(&menu->texts[i]);
+  }
+  
   for(u32 i = 0; i < menu->current_task; i++) {
     Rect st = menu->strikethroughs[i];
-    render_quad(glm::vec2(1.0f), glm::vec2(st.width, st.height), glm::vec4(1.0f));
+    render_quad(glm::vec2(st.x, st.y), glm::vec2(st.width, st.height), glm::vec4(1.0f));
   }
-
-  ui_canvas_render(menu->canvas);
 }
 
 void task_menu_reset(TaskMenu* menu) {

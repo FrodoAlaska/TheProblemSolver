@@ -5,7 +5,7 @@
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
-#define CRITICAL_HIT     80
+#define CRITICAL_HIT     140
 #define COMBO_TIME_LIMIT 450.0f
 #define MAX_HIT_POINTS   200
 /////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +42,6 @@ const u32 hit_manager_calc_hit_score(HitManager* hit, const glm::vec3& obj_pos, 
 }
 
 const bool hit_manager_is_critical(HitManager* hit, const glm::vec3& obj_pos, const glm::vec3& intersect_point) {
-  return hit_manager_calc_hit_score(hit, obj_pos, intersect_point) >= CRITICAL_HIT;
+  return hit_manager_calc_hit_score(hit, obj_pos, intersect_point) > CRITICAL_HIT;
 }
 /////////////////////////////////////////////////////////////////////////////////

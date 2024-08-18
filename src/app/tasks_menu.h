@@ -2,13 +2,14 @@
 
 #include "defines.h"
 #include "graphics/renderer2d.h"
-#include "ui/ui_canvas.h"
+#include "ui/ui_text.h"
 
 #include <string>
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
 #define TASKS_MAX 9
+#define TEXTS_MAX TASKS_MAX + 1
 /////////////////////////////////////////////////////////////////////////////////
 
 // Task
@@ -25,8 +26,9 @@ struct TaskMenu {
   Task tasks[TASKS_MAX];
   u32 current_task;
 
-  UICanvas* canvas;
+  UIText texts[TEXTS_MAX];
   Rect strikethroughs[TASKS_MAX];
+  glm::vec2 board_size;
 
   bool is_active, has_completed_all;
 };

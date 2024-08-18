@@ -43,6 +43,7 @@ bool app_init(void* user_data) {
   audio_system_add_sound(SOUND_GUN_SHOT, "assets/sfx/gun_shot.mp3");
   audio_system_add_sound(SOUND_BOTTLE_BREAK, "assets/sfx/bottle_break.mp3");
   audio_system_add_sound(SOUND_BOTTLE_SPAWN, "assets/sfx/bottle_spawn.mp3");
+  audio_system_add_sound(SOUND_BOTTLE_CRITICAL, "assets/sfx/bottle_critical.mp3");
   audio_system_add_sound(SOUND_BOX_HIT, "assets/sfx/box_hit.wav");
   audio_system_add_sound(SOUND_TASK_COMPLETE, "assets/sfx/task_complete.wav");
   audio_system_add_sound(SOUND_UI_CLICK, "assets/sfx/ui_click.mp3");
