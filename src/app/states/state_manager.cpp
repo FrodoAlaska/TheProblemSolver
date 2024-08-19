@@ -41,7 +41,7 @@ static void menu_button_change_scene(UIButton* button, const UIButtonState butto
   else if(button->text.str == "SETTINGS") {
     state_manager->current_state = STATE_SETTINGS;
   }
-  else if(button->text.str == "QUIT") {
+  else if(button->text.str == "LOSER") {
     event_dispatch(EVENT_GAME_QUIT, EventDesc{});
   }
 }
@@ -77,9 +77,17 @@ static void lose_button_change_scene(UIButton* button, const UIButtonState butto
 static void startup_state_init(StateManger* state, Font* font) {
   UICanvas* canvas = state->states[STATE_STARTUP];
   
-  ui_canvas_begin(canvas, glm::vec2(0.0f, 40.0f), UI_ANCHOR_CENTER);
-  ui_canvas_push_text(canvas, "Created By:", 30.0f, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
-  ui_canvas_push_text(canvas, "FrodoAlaska", 30.0f, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+  ui_canvas_begin(canvas, glm::vec2(0.0f, 45.0f), UI_ANCHOR_CENTER);
+  ui_canvas_push_text(canvas, "Created By:", 35.0f, glm::vec4(0.0f));
+  ui_canvas_push_text(canvas, "Frodo Alaska", 35.0f, glm::vec4(0.0f));
+  ui_canvas_end(canvas);
+  
+  ui_canvas_begin(canvas, glm::vec2(0.0f, 45.0f), UI_ANCHOR_CENTER);
+  ui_canvas_push_text(canvas, "Powered By:", 35.0f, glm::vec4(0.0f));
+  ui_canvas_push_text(canvas, "my own tears", 35.0f, glm::vec4(0.0f));
+
+  state->states[STATE_STARTUP]->texts[2].is_active = false;
+  state->states[STATE_STARTUP]->texts[3].is_active = false;
   ui_canvas_end(canvas);
 }
 
@@ -90,7 +98,7 @@ static void menu_state_init(StateManger* state, Font* font) {
   ui_canvas_begin(canvas, glm::vec2(0.0f, 60.0f), UI_ANCHOR_CENTER);
   ui_canvas_push_button(canvas, "START", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
   ui_canvas_push_button(canvas, "SETTINGS", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
-  ui_canvas_push_button(canvas, "QUIT", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
+  ui_canvas_push_button(canvas, "LOSER", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
   ui_canvas_end(canvas);
 
   // Play the menu theme as soon as the game loads 
@@ -175,6 +183,7 @@ void state_manager_shutdown(StateManger* state) {
 }
 
 void state_manager_update(StateManger* state) {
+  // Little startup screen to jerk my own hog
   if(state->current_state == STATE_STARTUP) {
     state->startup_timer++;
 
@@ -183,6 +192,14 @@ void state_manager_update(StateManger* state) {
       state->current_state = STATE_MENU;
 
       audio_system_play(SOUND_GUN_SHOT, 1.0f);
+    }
+
+    if(state->states[STATE_STARTUP]->texts[0].color.a >= 1.0f) {
+      state->states[STATE_STARTUP]->texts[0].is_active = false;
+      state->states[STATE_STARTUP]->texts[1].is_active = false;
+      
+      state->states[STATE_STARTUP]->texts[2].is_active = true;
+      state->states[STATE_STARTUP]->texts[3].is_active = true;
     }
   }
 
@@ -226,8 +243,7 @@ void state_manager_render_ui(StateManger* state) {
 
   switch(state->current_state) {
     case STATE_STARTUP:
-      ui_text_render_fade(&state->states[STATE_STARTUP]->texts[0], 0.001f);  
-      ui_text_render_fade(&state->states[STATE_STARTUP]->texts[1], 0.001f);  
+      ui_canvas_render_fade(state->states[STATE_STARTUP], 0.001f);
       break;
     case STATE_MENU: 
       ui_canvas_render(state->states[STATE_MENU]);  

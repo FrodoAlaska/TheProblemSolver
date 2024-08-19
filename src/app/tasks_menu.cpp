@@ -18,8 +18,8 @@ void task_menu_init(TaskMenu* menu) {
   menu->tasks[3] = Task{6200, "that nice carriage"};
   menu->tasks[4] = Task{9700, "nice ring for alice the hooker"};
   menu->tasks[5] = Task{15000, "jason's expensive college tuition"};
-  menu->tasks[6] = Task{25200, "debt for the fat loan shark"};
-  menu->tasks[7] = Task{54570, "That house on the river"};
+  menu->tasks[6] = Task{18200, "debt for the fat loan shark"};
+  menu->tasks[7] = Task{25170, "That house on the river"};
 
   menu->current_task = 0;
   menu->board_size = glm::vec2(0.0f, 0.0f);
@@ -27,7 +27,7 @@ void task_menu_init(TaskMenu* menu) {
   Font* font = renderer2d_get_default_font();
 
   f32 longest_text = 0.0f;
-    
+
   ui_text_create(&menu->texts[0],
                  font,
                  "TASKS", 

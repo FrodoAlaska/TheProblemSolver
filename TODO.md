@@ -1,6 +1,6 @@
 # TODO:
-- Settings menu
 - Playtest -> refine the tasks
+- Settings menu
 
 # FIX 
 - More accruate colliders

@@ -118,13 +118,18 @@ void game_state_init(GameState* game) {
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
-  count_timer_create(&game->timer, 0, 10, true);
+  count_timer_create(&game->timer, 30, 0, true);
   hit_manager_init(&game->hit_manager);
   task_menu_init(&game->task_menu);
 
   // Pause screen init 
   game->is_paused = false; 
-  ui_text_create(&game->pause_text, renderer2d_get_default_font(), "PAUSED", 30.0f, UI_ANCHOR_CENTER, glm::vec4(0, 0.8f, 0, 1), glm::vec2(0.0f, -20.0f));
+  ui_text_create(&game->pause_text, 
+                 renderer2d_get_default_font(), 
+                 "PAUSED", 
+                 30.0f, 
+                 UI_ANCHOR_CENTER, 
+                 glm::vec4(0, 0.8f, 0, 1));
 }
 
 void game_state_update(GameState* game) {
@@ -178,7 +183,7 @@ void game_state_update(GameState* game) {
     
   // Increase timer every three combos 
   if((game->hit_manager.total_combo % 3) == 0 && game->score != 0 && game->hit_manager.total_combo != 0) {
-    count_timer_increase(&game->timer, 10);
+    count_timer_increase(&game->timer, 5);
   } 
 
   // The player shot no objects, therefore end the combo 
