@@ -12,15 +12,14 @@
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 void task_menu_init(TaskMenu* menu) {
-  menu->tasks[0] = Task{1000, "pay bar tab"};
-  menu->tasks[1] = Task{2500, "alimony"};
-  menu->tasks[2] = Task{5000, "stupid dress for janice"};
-  menu->tasks[3] = Task{10000, "that red car"};
-  menu->tasks[4] = Task{12000, "nice ring for alice hooker"};
-  menu->tasks[5] = Task{20000, "jason's expensive college tuition"};
-  menu->tasks[6] = Task{50000, "nice clothes"};
-  menu->tasks[7] = Task{74560, "debt for loan shark"};
-  menu->tasks[8] = Task{100000, "house on river"};
+  menu->tasks[0] = Task{850, "pay bar tab"};
+  menu->tasks[1] = Task{1500, "stupid dress for janice"};
+  menu->tasks[2] = Task{3800, "useless alimony"};
+  menu->tasks[3] = Task{6200, "that nice carriage"};
+  menu->tasks[4] = Task{9700, "nice ring for alice the hooker"};
+  menu->tasks[5] = Task{15000, "jason's expensive college tuition"};
+  menu->tasks[6] = Task{25200, "debt for the fat loan shark"};
+  menu->tasks[7] = Task{54570, "That house on the river"};
 
   menu->current_task = 0;
   menu->board_size = glm::vec2(0.0f, 0.0f);

@@ -1,6 +1,7 @@
 #include "state_manager.h"
 #include "audio/audio_system.h"
 #include "audio/music_type.h"
+#include "audio/sound_type.h"
 #include "core/event.h"
 #include "core/input.h"
 #include "core/window.h"
@@ -13,6 +14,12 @@
 #include "engine/ui/ui_canvas.h"
 #include "engine/resources/font.h"
 #include "ui/ui_anchor.h"
+#include "ui/ui_text.h"
+
+// DEFS
+/////////////////////////////////////////////////////////////////////////////////
+#define STARTUP_TIMER_MAX 2100
+/////////////////////////////////////////////////////////////////////////////////
 
 // Callbacks 
 /////////////////////////////////////////////////////////////////////////////////
@@ -67,12 +74,18 @@ static void lose_button_change_scene(UIButton* button, const UIButtonState butto
 
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
+static void startup_state_init(StateManger* state, Font* font) {
+  UICanvas* canvas = state->states[STATE_STARTUP];
+  
+  ui_canvas_begin(canvas, glm::vec2(0.0f, 40.0f), UI_ANCHOR_CENTER);
+  ui_canvas_push_text(canvas, "Created By:", 30.0f, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+  ui_canvas_push_text(canvas, "FrodoAlaska", 30.0f, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+  ui_canvas_end(canvas);
+}
+
 static void menu_state_init(StateManger* state, Font* font) {
   state->title_texture = resources_get_texture("title"); 
-
   UICanvas* canvas = state->states[STATE_MENU];
-
-  // ui_canvas_push_text(canvas, "The Problem Solver", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(0, 10));
 
   ui_canvas_begin(canvas, glm::vec2(0.0f, 60.0f), UI_ANCHOR_CENTER);
   ui_canvas_push_button(canvas, "START", 30.0f, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), (void*)state, menu_button_change_scene);
@@ -136,7 +149,7 @@ static void lose_state_init(StateManger* state, Font* font) {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void state_manager_init(StateManger* state, Font* font) {
-  state->current_state = STATE_MENU;
+  state->current_state = STATE_STARTUP;
   state->cubemap = resources_get_cubemap("desert_cubemap");
 
   // Canvas init 
@@ -145,6 +158,7 @@ void state_manager_init(StateManger* state, Font* font) {
   }
 
   // States init 
+  startup_state_init(state, font); 
   menu_state_init(state, font);
   settings_state_init(state, font);
   game_state_init(&state->game_state);
@@ -161,6 +175,17 @@ void state_manager_shutdown(StateManger* state) {
 }
 
 void state_manager_update(StateManger* state) {
+  if(state->current_state == STATE_STARTUP) {
+    state->startup_timer++;
+
+    if(state->startup_timer >= STARTUP_TIMER_MAX) {
+      state->startup_timer = 0; 
+      state->current_state = STATE_MENU;
+
+      audio_system_play(SOUND_GUN_SHOT, 1.0f);
+    }
+  }
+
   if(state->current_state != STATE_GAME) {
     return; 
   }
@@ -199,15 +224,21 @@ void state_manager_render(StateManger* state) {
 void state_manager_render_ui(StateManger* state) {
   renderer2d_begin();
 
-  if(state->current_state == STATE_GAME) { // Render the game's ui
-    game_state_render_ui(&state->game_state);
-  }
-  else if(state->current_state == STATE_MENU) { 
-    ui_canvas_render(state->states[STATE_MENU]);  
-    render_texture(state->title_texture, glm::vec2(window_get_size().x / 2.0f, 128), glm::vec2(256.0f));
-  }
-  else {
-    ui_canvas_render(state->states[state->current_state]);  
+  switch(state->current_state) {
+    case STATE_STARTUP:
+      ui_text_render_fade(&state->states[STATE_STARTUP]->texts[0], 0.001f);  
+      ui_text_render_fade(&state->states[STATE_STARTUP]->texts[1], 0.001f);  
+      break;
+    case STATE_MENU: 
+      ui_canvas_render(state->states[STATE_MENU]);  
+      render_texture(state->title_texture, glm::vec2(window_get_size().x / 2.0f, 128), glm::vec2(256.0f));
+      break;
+    case STATE_GAME: 
+      game_state_render_ui(&state->game_state);
+      break;
+    default:
+      ui_canvas_render(state->states[state->current_state]);  
+      break;
   }
   
   renderer2d_end();

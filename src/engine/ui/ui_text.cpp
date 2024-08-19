@@ -5,6 +5,7 @@
 #include "core/window.h"
 #include "graphics/renderer2d.h"
 
+#include <cmath>
 #include <glm/glm.hpp>
 
 #include <string>
@@ -114,19 +115,13 @@ void ui_text_render(UIText* text) {
   render_text(text->font, text->font_size, text->str, text->position, text->color);
 }
 
-void ui_text_render_fade_out(UIText* text, const f32 speed) {
+void ui_text_render_fade(UIText* text, const f32 speed) {
   if(!text->is_active) {
     return;
   } 
 
-  text->is_active = true;
-
   if(text->color.a <= 1.0f) {
     text->color.a += speed;
-  }
-  else {
-    text->color.a = 0.0f; 
-    text->is_active = false;
   }
 
   render_text(text->font, text->font_size, text->str, text->position, text->color);

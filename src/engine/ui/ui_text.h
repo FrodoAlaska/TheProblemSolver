@@ -63,6 +63,9 @@ void ui_text_set_string(UIText* text, const std::string& new_str);
 // Render the given text object
 void ui_text_render(UIText* text);
 
+// Renders the text with a fade in/out animation 
+void ui_text_render_fade(UIText* text, const f32 speed);
+
 // Resizes the text according to the window size 
 // This will possibly be called when the window gets resized
 void ui_text_resize(UIText* text);

@@ -3,7 +3,8 @@
 // StateType 
 /////////////////////////////////////////////////////////////////////////////////
 enum StateType {
-  STATE_MENU = 0, 
+  STATE_STARTUP = 0,
+  STATE_MENU, 
   STATE_SETTINGS, 
   STATE_GAME,
   STATE_WIN,
