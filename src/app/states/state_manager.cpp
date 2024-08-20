@@ -10,11 +10,14 @@
 #include "graphics/renderer2d.h"
 #include "resources/resource_manager.h"
 #include "states/game_state.h"
+#include "states/settings_state.h"
 #include "states/state_type.h"
 #include "engine/ui/ui_canvas.h"
 #include "engine/resources/font.h"
 #include "ui/ui_anchor.h"
 #include "ui/ui_text.h"
+
+#include <glm/glm.hpp>
 
 // DEFS
 /////////////////////////////////////////////////////////////////////////////////
@@ -43,18 +46,6 @@ static void menu_button_change_scene(UIButton* button, const UIButtonState butto
   }
   else if(button->text.str == "LOSER") {
     event_dispatch(EVENT_GAME_QUIT, EventDesc{});
-  }
-}
-
-static void settings_button_change_scene(UIButton* button, const UIButtonState button_state, void* user_data) {
-  if(button_state != BUTTON_STATE_PRESSED) {
-    return;
-  }
-
-  StateManger* state_manager = (StateManger*)user_data;
-
-  if(button->text.str == "MENU") {
-    state_manager->current_state = STATE_MENU; 
   }
 }
 
@@ -105,20 +96,6 @@ static void menu_state_init(StateManger* state, Font* font) {
   audio_system_play(MUSIC_MENU, 1.0f);
 }
 
-static void settings_state_init(StateManger* state, Font* font) {
-  UICanvas* canvas = state->states[STATE_SETTINGS];
-
-  ui_canvas_push_text(canvas, "SETTINGS", 50.0f, glm::vec4(1.0f), UI_ANCHOR_TOP_CENTER, glm::vec2(-5.0f, 20.0f));
-  ui_canvas_push_button(canvas, 
-                        "MENU", 
-                        30.0f, 
-                        glm::vec4(1.0f), 
-                        glm::vec4(0, 0, 0, 1), 
-                        (void*)state, 
-                        settings_button_change_scene, 
-                        UI_ANCHOR_BOTTOM_LEFT);
-}
-
 static void win_state_init(StateManger* state, Font* font) {
   UICanvas* canvas = state->states[STATE_WIN];
   glm::vec4 color = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -157,7 +134,7 @@ static void lose_state_init(StateManger* state, Font* font) {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void state_manager_init(StateManger* state, Font* font) {
-  state->current_state = STATE_STARTUP;
+  state->current_state = STATE_SETTINGS;
   state->cubemap = resources_get_cubemap("desert_cubemap");
 
   // Canvas init 
@@ -168,7 +145,7 @@ void state_manager_init(StateManger* state, Font* font) {
   // States init 
   startup_state_init(state, font); 
   menu_state_init(state, font);
-  settings_state_init(state, font);
+  settings_state_create(state->states[STATE_SETTINGS], font, &state->current_state);
   game_state_init(&state->game_state);
   win_state_init(state, font);
   lose_state_init(state, font);
@@ -183,45 +160,53 @@ void state_manager_shutdown(StateManger* state) {
 }
 
 void state_manager_update(StateManger* state) {
-  // Little startup screen to jerk my own hog
-  if(state->current_state == STATE_STARTUP) {
-    state->startup_timer++;
+  // EW. Just ew
+  switch(state->current_state) {
+    case STATE_STARTUP:
+      // Little startup screen to jerk my own hog
+      if(state->current_state == STATE_STARTUP) {
+        state->startup_timer++;
 
-    if(state->startup_timer >= STARTUP_TIMER_MAX) {
-      state->startup_timer = 0; 
-      state->current_state = STATE_MENU;
+        // You can get an early out if the ENTER key is pressed.
+        if(state->startup_timer >= STARTUP_TIMER_MAX || input_key_pressed(KEY_ENTER)) {
+          state->startup_timer = 0; 
+          state->current_state = STATE_MENU;
 
-      audio_system_play(SOUND_GUN_SHOT, 1.0f);
-    }
+          audio_system_play(SOUND_GUN_SHOT, 1.0f);
+        }
 
-    if(state->states[STATE_STARTUP]->texts[0].color.a >= 1.0f) {
-      state->states[STATE_STARTUP]->texts[0].is_active = false;
-      state->states[STATE_STARTUP]->texts[1].is_active = false;
-      
-      state->states[STATE_STARTUP]->texts[2].is_active = true;
-      state->states[STATE_STARTUP]->texts[3].is_active = true;
-    }
+        if(state->states[STATE_STARTUP]->texts[0].color.a >= 1.0f) {
+          state->states[STATE_STARTUP]->texts[0].is_active = false;
+          state->states[STATE_STARTUP]->texts[1].is_active = false;
+
+          state->states[STATE_STARTUP]->texts[2].is_active = true;
+          state->states[STATE_STARTUP]->texts[3].is_active = true;
+        }
+      }
+      break;
+    case STATE_SETTINGS: 
+      settings_state_update();
+      break;
+    case STATE_GAME:
+      // Timer ran out. Player has lost
+      if(count_timer_has_runout(&state->game_state.timer)) {
+        state->current_state = STATE_LOSE;
+        input_cursor_show(true);
+      }
+
+      // Player completed all the tasks! 
+      if(state->game_state.task_menu.has_completed_all) {
+        audio_system_stop(MUSIC_BACKGROUND);
+        audio_system_play(MUSIC_WIN, 1.0f, false);
+
+        state->current_state = STATE_WIN;
+      }
+
+      game_state_update(&state->game_state);
+      break;
+    default: 
+      break;
   }
-
-  if(state->current_state != STATE_GAME) {
-    return; 
-  }
-
-  // Timer ran out. Player has lost
-  if(count_timer_has_runout(&state->game_state.timer)) {
-    state->current_state = STATE_LOSE;
-    input_cursor_show(true);
-  }
-
-  // Player completed all the tasks! 
-  if(state->game_state.task_menu.has_completed_all) {
-    audio_system_stop(MUSIC_BACKGROUND);
-    audio_system_play(MUSIC_WIN, 1.0f, false);
-
-    state->current_state = STATE_WIN;
-  }
-
-  game_state_update(&state->game_state);
 }
 
 void state_manager_render(StateManger* state) {
@@ -251,6 +236,9 @@ void state_manager_render_ui(StateManger* state) {
       break;
     case STATE_GAME: 
       game_state_render_ui(&state->game_state);
+      break;
+    case STATE_SETTINGS: 
+      settings_state_render();
       break;
     default:
       ui_canvas_render(state->states[state->current_state]);  

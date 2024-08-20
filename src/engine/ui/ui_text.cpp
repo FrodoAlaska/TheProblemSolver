@@ -5,7 +5,6 @@
 #include "core/window.h"
 #include "graphics/renderer2d.h"
 
-#include <cmath>
 #include <glm/glm.hpp>
 
 #include <string>
@@ -46,6 +45,8 @@ void ui_text_set_position(UIText* text, UIAnchor anc) {
   glm::vec2 window_size = window_get_size();
   glm::vec2 window_center = window_size / 2.0f;
   glm::vec2 padding = glm::vec2(20.0f);
+
+  text->size = text_size;
 
   switch(anc) {
     case UI_ANCHOR_TOP_LEFT:  
@@ -98,6 +99,8 @@ void ui_text_create(UIText* text, Font* font, const std::string& str, f32 font_s
   text->is_active = true;
 
   text->font = font == nullptr ? renderer2d_get_default_font() : font;
+
+  text->size = ui_text_measure_size(text);
 
   ui_text_set_position(text, anc);
 }

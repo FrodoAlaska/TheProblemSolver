@@ -21,11 +21,11 @@ struct Window {
 
   bool is_focused, is_fullscreen;
   KeyCode exit_key;
+
+  f32 sensitivity = 0.1f;
 }; 
 
 static Window window;
-
-#define SENS 0.05f
 /////////////////////////////////////////////////////////////////////////////////
 
 // Callbacks
@@ -41,7 +41,7 @@ void mouse_callback(GLFWwindow* win, f64 x_pos, f64 y_pos) {
   glm::vec2 offset(x_pos - window.last_mouse_pos.x, window.last_mouse_pos.y - y_pos);
   window.last_mouse_pos = glm::vec2(x_pos, y_pos);
 
-  offset *= SENS; 
+  offset *= window.sensitivity; 
   window.mouse_offset += offset;
 
   EventDesc desc = {
@@ -260,6 +260,10 @@ void window_set_close(const bool close) {
 
 void window_set_exit_key(KeyCode key) {
   window.exit_key = key;
+}
+
+void window_set_sensitivity(const f32 sens) {
+  window.sensitivity = sens;
 }
 /////////////////////////////////////////////////////////////////////////////////
 

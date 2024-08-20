@@ -28,4 +28,5 @@ void window_set_vsync(const bool vsync);
 void window_set_fullscreen(const bool fullscreen);
 void window_set_close(const bool close);
 void window_set_exit_key(KeyCode key);
+void window_set_sensitivity(const f32 sens);
 /////////////////////////////////////////////////////////////////////////////////

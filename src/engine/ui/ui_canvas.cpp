@@ -80,6 +80,7 @@ UIButton& ui_canvas_push_button(UICanvas* canvas,
                                 UIButtonCallback callback,
                                 const UIAnchor anc, 
                                 const glm::vec2& offset) {
+
   UIButton button; 
   ui_button_create(&button, 
                    canvas->font, 
@@ -88,13 +89,11 @@ UIButton& ui_canvas_push_button(UICanvas* canvas,
                    anc, 
                    button_color, 
                    text_color, 
-                   canvas->current_offset);
+                   offset);
   button.user_data = user_data;
   button.callback = callback;
 
   canvas->buttons.push_back(button);
-  canvas->current_offset += offset; 
-
   return *canvas->buttons.end();
 }
 
@@ -105,15 +104,22 @@ UIButton& ui_canvas_push_button(UICanvas* canvas,
                                 const glm::vec4& text_color, 
                                 void* user_data, 
                                 UIButtonCallback callback) {
-  return ui_canvas_push_button(canvas, 
-                               text, 
-                               font_size,
-                               button_color, 
-                               text_color,
-                               user_data,
-                               callback,
-                               canvas->current_anchor, 
-                               canvas->offset);
+  UIButton button; 
+  ui_button_create(&button, 
+                   canvas->font, 
+                   text, 
+                   font_size, 
+                   canvas->current_anchor, 
+                   button_color, 
+                   text_color, 
+                   canvas->current_offset);
+  button.user_data = user_data;
+  button.callback = callback;
+
+  canvas->buttons.push_back(button);
+  canvas->current_offset += canvas->offset; 
+
+  return *canvas->buttons.end();
 }
 
 void ui_canvas_render(UICanvas* canvas) {

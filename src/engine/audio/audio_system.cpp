@@ -97,6 +97,10 @@ void audio_system_play(const MusicType music, const f32 pitch, const bool loop) 
 void audio_system_set_volume(const f32 sound_volume, const f32 music_volume) {
   audio_sys.sound_volume = sound_volume;
   audio_sys.music_volume = music_volume;
+
+  for(u32 i = 0; i < MUSIC_MAX; i++) {
+    ma_sound_set_volume(&audio_sys.music[i], audio_sys.music_volume);
+  }
 }
 
 void audio_system_stop(const SoundType sound) {

@@ -11,7 +11,7 @@
 // UIText
 /////////////////////////////////////////////////////////////////////////////////
 struct UIText {
-  glm::vec2 position, offset;
+  glm::vec2 position, offset, size;
 
   f32 font_size;
   UIAnchor anchor; 
