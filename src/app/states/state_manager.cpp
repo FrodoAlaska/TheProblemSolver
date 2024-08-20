@@ -188,21 +188,8 @@ void state_manager_update(StateManger* state) {
       settings_state_update();
       break;
     case STATE_GAME:
-      // Timer ran out. Player has lost
-      if(count_timer_has_runout(&state->game_state.timer)) {
-        state->current_state = STATE_LOSE;
-        input_cursor_show(true);
-      }
 
-      // Player completed all the tasks! 
-      if(state->game_state.task_menu.has_completed_all) {
-        audio_system_stop(MUSIC_BACKGROUND);
-        audio_system_play(MUSIC_WIN, 1.0f, false);
-
-        state->current_state = STATE_WIN;
-      }
-
-      game_state_update(&state->game_state);
+      game_state_update(&state->game_state, &state->current_state);
       break;
     default: 
       break;

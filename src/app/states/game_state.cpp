@@ -11,6 +11,7 @@
 #include "physics/collider.h"
 #include "physics/physics_body.h"
 #include "physics/ray.h"
+#include "states/state_type.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
@@ -18,6 +19,7 @@
 #include "hit_manager.h"
 #include "engine/core/window.h"
 #include "ui/ui_anchor.h"
+#include "ui/ui_button.h"
 #include "ui/ui_text.h"
 #include "engine/physics/physics_world.h"
 #include "engine/resources/resource_manager.h"
@@ -93,6 +95,7 @@ static void check_collisions(GameState* game) {
 
 static void pause_screen_render(GameState* game) {
   ui_text_render(&game->pause_text);
+  ui_button_render(&game->menu_button);
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -118,28 +121,51 @@ void game_state_init(GameState* game) {
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
-  count_timer_create(&game->timer, 30, 0, true);
+  count_timer_create(&game->timer, 5, 0, true);
   hit_manager_init(&game->hit_manager);
   task_menu_init(&game->task_menu);
 
   // Pause screen init 
   game->is_paused = false; 
+  Font* font = renderer2d_get_default_font();
+
   ui_text_create(&game->pause_text, 
-                 renderer2d_get_default_font(), 
+                 font, 
                  "PAUSED", 
-                 30.0f, 
+                 40.0f, 
                  UI_ANCHOR_CENTER, 
                  glm::vec4(0, 0.8f, 0, 1));
+  ui_button_create(&game->menu_button, font, "MENU", 30.0f, UI_ANCHOR_CENTER, glm::vec4(1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 50.0f));
 }
 
-void game_state_update(GameState* game) {
+void game_state_update(GameState* game, StateType* current_state) {
   // Pausing/unpausing the game
   if(input_key_pressed(KEY_ESCAPE)) {
     game->is_paused = !game->is_paused;
+
+    input_cursor_show(game->is_paused);
+  }
+
+  // Timer ran out. Player has lost
+  if(count_timer_has_runout(&game->timer)) {
+    *current_state = STATE_LOSE;
+    input_cursor_show(true);
+  }
+
+  // Player completed all the tasks! 
+  if(game->task_menu.has_completed_all) {
+    audio_system_stop(MUSIC_BACKGROUND);
+    audio_system_play(MUSIC_WIN, 1.0f, false);
+
+    *current_state = STATE_WIN;
   }
 
   // Don't update anything when paused
   if(game->is_paused) {
+    if(ui_button_pressed(&game->menu_button)) {
+      *current_state = STATE_MENU;
+    }
+
     return;
   }
 

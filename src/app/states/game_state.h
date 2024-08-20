@@ -4,11 +4,13 @@
 #include "entities/target.h"
 #include "graphics/camera.h"
 #include "resources/texture.h"
+#include "states/state_type.h"
 #include "tasks_menu.h"
 #include "count_timer.h"
 #include "target_spawner.h"
 #include "entities/object.h"
 #include "hit_manager.h"
+#include "ui/ui_button.h"
 #include "ui/ui_text.h"
 
 #include <vector>
@@ -30,7 +32,8 @@ struct GameState {
 
   bool is_paused; 
   UIText pause_text;
-
+  UIButton menu_button;
+  
   Texture* crosshair;
 };
 /////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +41,7 @@ struct GameState {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void game_state_init(GameState* game);
-void game_state_update(GameState* game);
+void game_state_update(GameState* game, StateType* current_state);
 void game_state_render(GameState* game);
 void game_state_render_ui(GameState* game);
 void game_state_reset(GameState* game);
