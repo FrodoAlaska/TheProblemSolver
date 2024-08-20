@@ -8,6 +8,7 @@
 #include "core/input.h"
 #include "graphics/renderer2d.h"
 #include "ui/ui_text.h"
+#include "utils/utils_file.h"
 
 #include <string>
 
@@ -55,6 +56,7 @@ static void settings_button_change_scene(UIButton* button, const UIButtonState b
   }
   else if(button->text.str == "APPLY") {
     apply_settings(); 
+    file_write_binary("settings.bin", s_settings.values, sizeof(s_settings.values));
   }
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -94,10 +96,7 @@ void settings_state_create(UICanvas* canvas, const Font* font, StateType* curren
                         glm::vec2(0.0f, -120.0f));
 
   // Setting the default values
-  s_settings.values[MUSIC_VOL_INDEX] = 10;
-  s_settings.values[SOUND_VOL_INDEX] = 3;
-  s_settings.values[SENS_INDEX] = 5;
-
+  file_read_binary("settings.bin", s_settings.values, sizeof(s_settings.values));
   apply_settings();
 }
 

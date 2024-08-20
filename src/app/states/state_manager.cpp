@@ -134,7 +134,7 @@ static void lose_state_init(StateManger* state, Font* font) {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 void state_manager_init(StateManger* state, Font* font) {
-  state->current_state = STATE_SETTINGS;
+  state->current_state = STATE_STARTUP;
   state->cubemap = resources_get_cubemap("desert_cubemap");
 
   // Canvas init 

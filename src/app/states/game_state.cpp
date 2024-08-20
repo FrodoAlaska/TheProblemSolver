@@ -156,7 +156,6 @@ void game_state_update(GameState* game) {
 
   // Camera update
   camera_update(&game->camera);
-  camera_move(&game->camera);
  
   // Systems and managers update
   target_spawner_update(&game->target_spawner);
