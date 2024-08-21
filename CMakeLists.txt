@@ -17,7 +17,6 @@ set(CMAKE_BUILD_TYPE Debug)
 ##########################################################
 set(WINDOWS_COMPILER_PATH /usr/bin)
 set(LINUX_COMPILER_PATH /usr/bin)
-set(WEB_COMPILER_PATH) # Put the path/to/the/em++/compiler
 set(BUILD_PLATFORM) # Set the platform you want to build for when initially building this cmake file
 ##########################################################
 
@@ -44,10 +43,6 @@ elseif(BUILD_PLATFORM STREQUAL "PLAT_LINUX")
   set(CMAKE_CXX_COMPILER ${LINUX_COMPILER_PATH}/c++)
   set(CMAKE_C_COMPILER ${LINUX_COMPILER_PATH}/c)
   list(APPEND BUILD_FLAGS PLAT_LINUX)
-elseif(BUILD_PLATFORM STREQUAL "PLAT_WEB")
-  set(CMAKE_CXX_COMPILER ${WEB_COMPILER_PATH}/em++)
-  set(CMAKE_C_COMPILER ${WEB_COMPILER_PATH}/emcc)
-  list(APPEND BUILD_FLAGS PLAT_WEB)
 endif()
 
 # Sources 

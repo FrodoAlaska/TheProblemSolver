@@ -132,7 +132,7 @@ static void glfw_init() {
 }
 
 static bool create_handle(i32 width, i32 height, const char* title) {
-  window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  window.handle = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), nullptr);
 
   if(!window.handle) {
     printf("[ERROR]: Failed to create GLFW window\n");
