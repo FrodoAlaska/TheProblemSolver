@@ -5,6 +5,7 @@
 
 #include <glm/vec2.hpp>
 
+struct Texture;
 struct GLFWwindow;
 
 // Public functions
@@ -29,4 +30,6 @@ void window_set_fullscreen(const bool fullscreen);
 void window_set_close(const bool close);
 void window_set_exit_key(KeyCode key);
 void window_set_sensitivity(const f32 sens);
+void window_set_icon(const Texture* icon);
+void window_set_cursor_image(const Texture* img);
 /////////////////////////////////////////////////////////////////////////////////

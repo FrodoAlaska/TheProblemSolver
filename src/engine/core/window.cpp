@@ -2,6 +2,7 @@
 #include "defines.h"
 #include "core/event.h"
 #include "core/input.h"
+#include "resources/texture.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -13,6 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 struct Window {
   GLFWwindow* handle = nullptr;
+  GLFWcursor* cursor = nullptr;
 
   glm::vec2 size;
   glm::vec2 old_size; // To return the window to its original size after being fullscreen
@@ -130,7 +132,7 @@ static void glfw_init() {
 }
 
 static bool create_handle(i32 width, i32 height, const char* title) {
-  window.handle = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), nullptr);
+  window.handle = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
   if(!window.handle) {
     printf("[ERROR]: Failed to create GLFW window\n");
@@ -187,7 +189,9 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
 }
 
 void window_destroy() {
+  glfwDestroyCursor(window.cursor);
   glfwDestroyWindow(window.handle);
+
   glfwTerminate();
 }
 
@@ -264,6 +268,27 @@ void window_set_exit_key(KeyCode key) {
 
 void window_set_sensitivity(const f32 sens) {
   window.sensitivity = sens;
+}
+
+void window_set_icon(const Texture* icon) {
+  GLFWimage img = {
+    .width = icon->width, 
+    .height = icon->height, 
+    .pixels = (u8*)icon->pixels,
+  };
+
+  glfwSetWindowIcon(window.handle, 1, &img);
+}
+
+void window_set_cursor_image(const Texture* img) {
+  GLFWimage image = {
+    .width = img->width, 
+    .height = img->height, 
+    .pixels = (u8*)img->pixels,
+  };
+
+  window.cursor = glfwCreateCursor(&image, image.width / 2, image.height / 2);
+  glfwSetCursor(window.handle, window.cursor);
 }
 /////////////////////////////////////////////////////////////////////////////////
 

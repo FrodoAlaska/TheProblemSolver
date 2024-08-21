@@ -22,6 +22,8 @@ struct Texture {
   i32 width, height;
   i32 depth, slot, channels;
   TextureFormat format;
+
+  void* pixels = nullptr;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

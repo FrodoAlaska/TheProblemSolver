@@ -31,9 +31,9 @@ bool app_init(void* user_data) {
   // Adding textures 
   resources_add_texture("ground_texture", "textures/sand_texture.png");
   resources_add_texture("platform_texture", "textures/container.png");
-  resources_add_texture("crosshair", "textures/crosshair006.png");
   resources_add_texture("title", "textures/title_texture.png");
   resources_add_cubemap("desert_cubemap", "cubemaps/desert_cubemap/");
+  Texture* crosshair_texture = resources_add_texture("crosshair", "textures/crosshair006.png");
 
   // Adding music 
   audio_system_add_music(MUSIC_MENU, "assets/music/menu_theme.mp3");
@@ -55,8 +55,11 @@ bool app_init(void* user_data) {
   // State manager init
   state_manager_init(&s_app.state_manager, font);
 
+  // Window stuff 
   window_set_exit_key(KEY_F1);
-  
+  window_set_icon(crosshair_texture); 
+  window_set_cursor_image(crosshair_texture); 
+
   return true;
 }
 

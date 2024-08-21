@@ -14,6 +14,7 @@
 struct TargetSpawner {
   std::vector<Target*>* objects; 
   std::queue<glm::vec3> empty_seats;
+  u32 current_targets;
 
   f32 spawn_counter, spawn_counter_limit;
   bool can_spawn;

@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-static bool is_debug = false;
-
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
 static void check_collisions(GameState* game) {
@@ -121,7 +119,7 @@ void game_state_init(GameState* game) {
 
   // Systems and managers init
   target_spawner_init(&game->target_spawner, game->targets);
-  count_timer_create(&game->timer, 5, 0, true);
+  count_timer_create(&game->timer, 30, 0, true);
   hit_manager_init(&game->hit_manager);
   task_menu_init(&game->task_menu);
 
@@ -171,10 +169,6 @@ void game_state_update(GameState* game, StateType* current_state) {
 
   if(input_key_pressed(KEY_T)) {
     game->task_menu.is_active = !game->task_menu.is_active;
-  }
-
-  if(input_key_pressed(KEY_Q)) {
-    is_debug = !is_debug;
   }
 
   // Physics update
@@ -240,7 +234,6 @@ void game_state_render_ui(GameState* game) {
   count_timer_render(&game->timer);
 
   // Rendering crosshair 
-  // render_texture(game->crosshair, window_get_size() / 2.0f - 4.0f, glm::vec2(96.0f), glm::vec4(1.0f));
   render_quad(window_get_size() / 2.0f - 2.0f, glm::vec2(4.0f), glm::vec4(0, 0, 0, 1));
    
   // Task menu render

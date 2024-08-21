@@ -48,8 +48,8 @@ Texture* texture_load(const std::string& path) {
   glBindTexture(GL_TEXTURE_2D, texture->id);
 
   stbi_set_flip_vertically_on_load(true);
-  u8* data = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->channels, 0);
-  if(data) {
+  texture->pixels = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->channels, 0);
+  if(texture->pixels) {
     // Deduce the correct format based on the channels
     switch(texture->channels) {
       case 1:
@@ -67,7 +67,7 @@ Texture* texture_load(const std::string& path) {
     } 
 
     // Send the pixel data to the GPU and generate a mipmap
-    glTexImage2D(GL_TEXTURE_2D, texture->depth, GL_RGBA, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, texture->depth, GL_RGBA, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, texture->pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
   // Couldn't load the texture
@@ -80,9 +80,6 @@ Texture* texture_load(const std::string& path) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  // Don't need the pixel data anymore, so free it. 
-  stbi_image_free(data);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   return texture;
@@ -127,8 +124,9 @@ void texture_unload(Texture* texture) {
   }
 
   glDeleteTextures(1, &texture->id);
-  delete texture;
+  stbi_image_free(texture->pixels);
 
+  delete texture;
   texture = nullptr;
 }
 
