@@ -25,6 +25,7 @@ Even though this project handles all of its dependencies by building them and ge
 - MiniAudio
 - stb_image
 - stb_truetype
+- tinyobjloader
 
 However, as mentioned before, there is no need to handle any of these dependencies yourself. They are all--hopefully--ready for use when you clone the repository.
 
