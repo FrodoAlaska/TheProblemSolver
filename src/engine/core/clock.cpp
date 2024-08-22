@@ -1,0 +1,47 @@
+#include "clock.h"
+#include "defines.h"
+#include "core/window.h"
+
+// GClock
+/////////////////////////////////////////////////////////////////////////////////
+struct GClock {
+  i32 frame_count = 0;
+
+  f64 last_frame, delta_time; 
+  f64 fps, prev_time, current_time; 
+};
+
+struct GClock clock;
+/////////////////////////////////////////////////////////////////////////////////
+
+// Public functions
+/////////////////////////////////////////////////////////////////////////////////
+void gclock_update() {
+  // Calculate delta time
+  //////////////////////////////////////////////////
+  clock.delta_time = window_get_time() - clock.last_frame;
+  clock.last_frame = window_get_time();
+  //////////////////////////////////////////////////
+  
+  // Calculate FPS
+  //////////////////////////////////////////////////
+  clock.frame_count++;
+  clock.current_time = window_get_time();
+
+  if((clock.current_time - clock.prev_time) >= 1.0f)
+  {
+    clock.fps = clock.frame_count;
+    clock.frame_count = 0;
+    clock.prev_time = clock.current_time;
+  }
+  //////////////////////////////////////////////////
+}
+
+f64 gclock_delta_time() {
+  return clock.delta_time;
+}
+
+f64 gclock_fps() {
+  return clock.fps;
+}
+/////////////////////////////////////////////////////////////////////////////////
