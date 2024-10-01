@@ -17,7 +17,7 @@ void task_menu_init(TaskMenu* menu) {
   menu->tasks[2] = Task{3800, "useless alimony"};
   menu->tasks[3] = Task{6200, "that nice carriage"};
   menu->tasks[4] = Task{9700, "nice ring for alice the hooker"};
-  menu->tasks[5] = Task{15000, "jason's expensive college tuition"};
+  menu->tasks[5] = Task{15000, "expensive college tuition for jason"};
   menu->tasks[6] = Task{18200, "debt for the fat loan shark"};
   menu->tasks[7] = Task{25170, "That house on the river"};
 
@@ -30,11 +30,11 @@ void task_menu_init(TaskMenu* menu) {
 
   ui_text_create(&menu->texts[0],
                  font,
-                 "TASKS", 
+                 "TODO", 
                  40.0f, 
                  UI_ANCHOR_TOP_CENTER, 
                  glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 
-                 glm::vec2(0.0f, 80.0f));
+                 glm::vec2(0.0f, 180.0f));
 
   for(u32 i = 1; i < TEXTS_MAX; i++) {
     ui_text_create(&menu->texts[i],
@@ -43,7 +43,7 @@ void task_menu_init(TaskMenu* menu) {
                    25.0f, 
                    UI_ANCHOR_CENTER, 
                    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 
-                   glm::vec2(0.0f, i * 40.0f));
+                   glm::vec2(0.0f, i * 30.0f));
     menu->texts[i].position.y -= 230.0f; 
 
     UIText text = menu->texts[i];
@@ -113,12 +113,6 @@ void task_menu_render(TaskMenu* menu) {
     return;
   }
   
-  f32 board_x = window_get_size().x / 2.0f;
-  f32 board_y = menu->texts[0].position.y + menu->board_size.y / 2.0f - 50.0f;
-  
-  render_quad(glm::vec2(board_x, board_y), menu->board_size + 8.0f, glm::vec4(0.0f, 0.1f, 0.0f, 1.0f));
-  render_quad(glm::vec2(board_x, board_y), menu->board_size, glm::vec4(1.0f, 1.0f, 1.0f, 0.8f));
-
   for(u32 i = 0; i < TEXTS_MAX; i++) {
     ui_text_render(&menu->texts[i]);
   }
