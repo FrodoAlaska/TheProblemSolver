@@ -6,7 +6,9 @@ Feel like a mouse cowboy as you take out empty and emotionless bottles that did 
 Move fast, boy! These problems aren't going to solve themselves.
 
 # Build Instructions 
-This project uses CMake as its build syste, so, you will need to have CMake configured on your system. The commands below, as with any CMake project, will set up the project for building. 
+This project uses CMake as its build syste, so, you will need to have CMake configured on your system. The commands below, as with any CMake project, will set up the project for building.
+
+![The Problem Solver](assets/tps.png)
 
 ```
 git clone https://github.com/MohamedAG2002/TheProblemSolver.git 
