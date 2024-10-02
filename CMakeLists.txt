@@ -149,9 +149,9 @@ add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${APP_SOURCES} ${EDITOR_SOURCES
 
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${BUILD_FLAGS})
-target_compile_options(${PROJECT_NAME} PRIVATE -lm -Wno-deprecated -O3)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+target_compile_definitions(${PROJECT_NAME} PUBLIC ${BUILD_FLAGS})
+target_compile_options(${PROJECT_NAME} PUBLIC -O3)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${LIBS_DIR} ${SRC_DIR} ${ENGINE_SRC_DIR} ${APP_SRC_DIR} ${EDITOR_SRC_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw)

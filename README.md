@@ -29,6 +29,10 @@ Even though this project handles all of its dependencies by building them and ge
 
 However, as mentioned before, there is no need to handle any of these dependencies yourself. They are all--hopefully--ready for use when you clone the repository.
 
+Before you can fully build the project, you'll also need the 'assets' directory which will be copied over to the binary directory upon building the project. You can go to the official itch page and download the game to obtain the asset directory. After which, you can easily copy the asset directory to the main project's directory and CMake will handle the rest. 
+
+Itch: https://frodoalaska.itch.io/the-problem-solver
+
 # Credits
 Beer bottle: https://dream-search-repeat.itch.io/cups-and-bottles-little-pack
 
