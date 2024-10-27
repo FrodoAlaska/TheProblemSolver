@@ -362,7 +362,7 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
 
     if(ch == '\n') {
       off_x = 0.0f;
-      off_y = font->ascent - font->descent + font->line_gap;
+      off_y = (font->ascent - font->descent) + font->line_gap;
       continue;
     }
     else if(ch == ' ' || ch == '\t') {

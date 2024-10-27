@@ -76,9 +76,11 @@ static void startup_state_init(StateManger* state, Font* font) {
   ui_canvas_begin(canvas, glm::vec2(0.0f, 45.0f), UI_ANCHOR_CENTER);
   ui_canvas_push_text(canvas, "Powered By:", 35.0f, glm::vec4(0.0f));
   ui_canvas_push_text(canvas, "my own tears", 35.0f, glm::vec4(0.0f));
+  ui_canvas_push_text(canvas, "press [ENTER] to continue", 35.0f, glm::vec4(0.0f));
 
   state->states[STATE_STARTUP]->texts[2].is_active = false;
   state->states[STATE_STARTUP]->texts[3].is_active = false;
+  state->states[STATE_STARTUP]->texts[4].is_active = false;
   ui_canvas_end(canvas);
 }
 
@@ -162,33 +164,28 @@ void state_manager_shutdown(StateManger* state) {
 void state_manager_update(StateManger* state) {
   // EW. Just ew
   switch(state->current_state) {
-    case STATE_STARTUP:
-      // Little startup screen to jerk my own hog
-      if(state->current_state == STATE_STARTUP) {
-        state->startup_timer++;
+    // Little startup screen to jerk my own hog
+    case STATE_STARTUP: 
+      // You can get an early out if the ENTER key is pressed.
+      if(input_key_pressed(KEY_ENTER)) {
+        state->current_state = STATE_MENU;
 
-        // You can get an early out if the ENTER key is pressed.
-        if(state->startup_timer >= STARTUP_TIMER_MAX || input_key_pressed(KEY_ENTER)) {
-          state->startup_timer = 0; 
-          state->current_state = STATE_MENU;
+        audio_system_play(SOUND_GUN_SHOT, 1.0f);
+      }
 
-          audio_system_play(SOUND_GUN_SHOT, 1.0f);
-        }
+      if(state->states[STATE_STARTUP]->texts[0].color.a >= 1.0f) {
+        state->states[STATE_STARTUP]->texts[0].is_active = false;
+        state->states[STATE_STARTUP]->texts[1].is_active = false;
 
-        if(state->states[STATE_STARTUP]->texts[0].color.a >= 1.0f) {
-          state->states[STATE_STARTUP]->texts[0].is_active = false;
-          state->states[STATE_STARTUP]->texts[1].is_active = false;
-
-          state->states[STATE_STARTUP]->texts[2].is_active = true;
-          state->states[STATE_STARTUP]->texts[3].is_active = true;
-        }
+        state->states[STATE_STARTUP]->texts[2].is_active = true;
+        state->states[STATE_STARTUP]->texts[3].is_active = true;
+        state->states[STATE_STARTUP]->texts[4].is_active = true;
       }
       break;
     case STATE_SETTINGS: 
       settings_state_update();
       break;
     case STATE_GAME:
-
       game_state_update(&state->game_state, &state->current_state);
       break;
     default: 
@@ -215,7 +212,7 @@ void state_manager_render_ui(StateManger* state) {
 
   switch(state->current_state) {
     case STATE_STARTUP:
-      ui_canvas_render_fade(state->states[STATE_STARTUP], 0.001f);
+      ui_canvas_render_fade(state->states[STATE_STARTUP], 0.003f);
       break;
     case STATE_MENU: 
       ui_canvas_render(state->states[STATE_MENU]);  

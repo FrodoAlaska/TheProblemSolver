@@ -59,6 +59,7 @@ bool app_init(void* user_data) {
   window_set_exit_key(KEY_F1);
   window_set_icon(crosshair_texture); 
   window_set_cursor_image(crosshair_texture); 
+  window_set_vsync(true);
 
   return true;
 }

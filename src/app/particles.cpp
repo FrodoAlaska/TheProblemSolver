@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 #define PARTICLES_MAX  32
 #define FADE_TIME      520.0f
-#define PARTICLE_FORCE 2500.0f
+#define PARTICLE_FORCE 250.0f
 /////////////////////////////////////////////////////////////////////////////////
 
 // ParticleManager
@@ -33,7 +33,8 @@ static void activate_particles(const glm::vec3& pos) {
   for(u32 i = 0; i < PARTICLES_MAX; i++) {
     PhysicsBody* particle = s_particles.particles[i];
     particle->is_active = true;
-  
+    particle->linear_velocity = glm::vec3(0.0f);
+
     glm::vec3 dir = random_vec3(glm::vec3(-1.0f), glm::vec3(1.0f));
 
     transform_translate(&particle->transform, pos);

@@ -17,8 +17,6 @@ struct StateManger {
 
   UICanvas* states[STATES_MAX]; 
   GameState game_state;
-
-  u32 startup_timer = 0;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
